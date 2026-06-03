@@ -515,9 +515,13 @@ docker compose up -d --build
 | Jose Manuel Salas Valencia | Desarrollo Full-Stack | 
 
 **Institución:** Universidad del Pacifico  
+
 **Programa:** Ingenieria En Sistemas 
+
 **Materia:** Seminario I
+
 **Docente:** Gonzalo Andres Lucio Lopez 
+
 **Período:** 2026-I
 
 ---
