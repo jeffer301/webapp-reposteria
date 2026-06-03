@@ -1,0 +1,132 @@
+<section id="tienda" style="background: var(--cream);">
+  <div class="container">
+    <div class="text-center mb-4">
+      <p class="section-label">Nuestros productos</p>
+      <h2 class="section-title">Todo hecho con <em>amor</em></h2>
+      <div class="divider mx-auto"></div>
+    </div>
+
+    <!-- Buscador -->
+    <div class="search-row mb-4">
+      <div class="search-box">
+        <i class="bi bi-search" aria-hidden="true"></i>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Buscar productos…"
+          aria-label="Buscar productos"
+          [(ngModel)]="searchText"
+          (keyup.enter)="onSearch()"
+        >
+        @if (searchText()) {
+          <button class="search-clear" (click)="searchText.set(''); onSearch()" aria-label="Limpiar búsqueda">&times;</button>
+        }
+      </div>
+      <button class="btn btn-search" (click)="onSearch()" aria-label="Buscar">
+        <i class="bi bi-search" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <!-- Categorías -->
+    <div class="cats-row justify-content-center">
+      @for (cat of prodSvc.categorias(); track cat) {
+        <button class="cat-pill"
+          [class.active]="(prodSvc.currentCat === '' && cat === 'Todos') || (prodSvc.currentCat === cat && cat !== 'Todos')"
+          (click)="filterCat(cat)">
+          {{ cat }}
+        </button>
+      }
+    </div>
+
+    <!-- Loading -->
+    @if (prodSvc.loading()) {
+      <div class="row g-4">
+        @for (_ of [1,2,3,4,5,6,7,8]; track _) {
+          <div class="col-sm-6 col-lg-4 col-xl-3">
+            <div class="product-card h-100 skeleton-card">
+              <div class="skeleton skeleton-img"></div>
+              <div class="product-body">
+                <div class="skeleton skeleton-text skeleton-cat"></div>
+                <div class="skeleton skeleton-text skeleton-title"></div>
+                <div class="skeleton skeleton-text skeleton-desc"></div>
+                <div class="skeleton skeleton-text skeleton-price"></div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (prodSvc.error()) {
+      <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle" style="font-size:3rem;color:var(--rose);" aria-hidden="true"></i>
+        <p class="mt-3 text-muted">{{ prodSvc.error() }}</p>
+        <button class="btn btn-primary" (click)="prodSvc.loadAll(1)">Reintentar</button>
+      </div>
+    } @else {
+      <!-- Grid de productos -->
+      <div class="row g-4">
+        @for (p of prodSvc.productos(); track p.id) {
+          <div class="col-sm-6 col-lg-4 col-xl-3">
+            <div class="product-card h-100" role="button" tabindex="0" (click)="selectProduct.emit(p)" (keydown.enter)="selectProduct.emit(p)" (keydown.space)="$event.preventDefault(); selectProduct.emit(p)" style="cursor:pointer;">
+              <div style="position:relative;">
+                <img class="product-img" [src]="p.imagen" [alt]="p.nombre" loading="lazy" width="400" height="220" (error)="p.imagen='https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500'">
+                @if (p.destacado) {
+                  <span class="badge-dest" style="position:absolute;top:.7rem;left:.7rem;">⭐ Destacado</span>
+                }
+                @if (p.precio_original) {
+                  <span class="badge bg-danger" style="position:absolute;top:.7rem;right:.7rem;font-size:.75rem;">-{{ descPercent(p.precio_original, p.precio) }}%</span>
+                }
+              </div>
+              <div class="product-body d-flex flex-column h-100">
+                <p class="product-category">{{ p.categoria }}</p>
+                <h3 class="product-name">{{ p.nombre }}</h3>
+                <p class="product-desc">{{ p.descripcion }}</p>
+                @if (p.alergenos.length) {
+                  <p style="font-size:.72rem;color:var(--muted);margin-bottom:.7rem;">⚠️ {{ p.alergenos.join(', ') }}</p>
+                }
+                <div class="product-footer mt-auto">
+                  <div class="product-price">
+                    @if (p.precio_original) {
+                      <span style="text-decoration:line-through;color:var(--muted);font-size:.85rem;margin-right:.5rem;">{{ fmtCOP(p.precio_original) }}</span>
+                    }
+                    {{ fmtCOP(p.precio) }} <span>COP</span>
+                  </div>
+                  <button class="btn-add" (click)="addToCart(p, $event)" [disabled]="p.stock <= 0">
+                    @if (p.stock <= 0) {
+                      Agotado
+                    } @else {
+                      <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Agregar
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <div class="text-center py-5">
+            <i class="bi bi-emoji-frown" style="font-size:3rem;color:var(--muted);" aria-hidden="true"></i>
+            <p class="mt-3 text-muted">No encontramos productos con esos filtros</p>
+          </div>
+        }
+      </div>
+
+      <!-- Paginación -->
+      @if (prodSvc.pageInfo().totalPages > 1) {
+        <nav class="mt-5 d-flex justify-content-center" aria-label="Paginación de productos">
+          <ul class="pagination">
+            <li class="page-item" [class.disabled]="prodSvc.currentPage <= 1">
+              <a class="page-link" href="#" (click)="$event.preventDefault(); prevPage()">&laquo;</a>
+            </li>
+            @for (p of pages(); track p) {
+              <li class="page-item" [class.active]="p === prodSvc.currentPage">
+                <a class="page-link" href="#" (click)="$event.preventDefault(); prodSvc.goToPage(p)">{{ p }}</a>
+              </li>
+            }
+            <li class="page-item" [class.disabled]="prodSvc.currentPage >= prodSvc.pageInfo().totalPages">
+              <a class="page-link" href="#" (click)="$event.preventDefault(); nextPage()">&raquo;</a>
+            </li>
+          </ul>
+        </nav>
+      }
+    }
+  </div>
+</section>

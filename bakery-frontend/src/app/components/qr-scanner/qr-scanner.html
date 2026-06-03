@@ -1,0 +1,25 @@
+<div class="qr-overlay" (click)="stop();close.emit()"></div>
+<div class="qr-modal">
+  <div class="qr-header">
+    <h6><i class="bi bi-qr-code-scan me-2"></i>Escanear QR</h6>
+    <button class="btn-close btn-close-white" (click)="stop();close.emit()"></button>
+  </div>
+  <div class="qr-body">
+    @if (error()) {
+      <div class="alert alert-danger py-2">{{ error() }}</div>
+      <button class="btn btn-sm btn-primary" (click)="start()">Reintentar</button>
+    } @else if (!scanning()) {
+      <div class="text-center py-4">
+        <i class="bi bi-camera" style="font-size:3rem;color:var(--muted);display:block;margin-bottom:1rem;"></i>
+        <button class="btn btn-success" (click)="start()"><i class="bi bi-camera me-1"></i> Abrir cámara</button>
+      </div>
+    } @else {
+      <div class="qr-video-wrapper">
+        <video id="qr-video" autoplay playsinline></video>
+        <div class="qr-frame"></div>
+      </div>
+      <p class="text-muted text-center mt-2" style="font-size:.85rem;">Enfoca el código QR del pedido</p>
+      <button class="btn btn-sm btn-outline-secondary" (click)="stop()">Cancelar</button>
+    }
+  </div>
+</div>

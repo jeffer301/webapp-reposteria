@@ -1,0 +1,148 @@
+<div class="modal-overlay" (click)="close.emit()"></div>
+<div class="modal-show modal-bakery">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title"><i class="bi bi-bag-check me-2" aria-hidden="true"></i>Finalizar pedido</h5>
+      <button type="button" class="btn-close btn-close-white" (click)="close.emit()"></button>
+    </div>
+    <div class="modal-body p-4">
+      <div class="row g-4">
+        <div class="col-md-7">
+          <h6 class="fw-bold mb-3" style="color:var(--chocolate)">Datos de contacto</h6>
+          <div class="row g-3">
+            <div class="col-6">
+              <label class="form-label" for="co-nombre">Nombre *</label>
+              <input class="form-control" id="co-nombre" name="nombre" [(ngModel)]="form.nombre" autocomplete="given-name" placeholder="Tu nombre">
+            </div>
+            <div class="col-6">
+              <label class="form-label" for="co-apellido">Apellido *</label>
+              <input class="form-control" id="co-apellido" name="apellido" [(ngModel)]="form.apellido" autocomplete="family-name" placeholder="Tu apellido">
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="co-email">Email *</label>
+              <input class="form-control" id="co-email" name="email" [(ngModel)]="form.email" type="email" autocomplete="email" spellcheck="false" placeholder="tu@email.com">
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="co-telefono">Teléfono</label>
+              <input class="form-control" id="co-telefono" name="telefono" [(ngModel)]="form.telefono" type="tel" inputmode="numeric" autocomplete="tel" placeholder="10 dígitos">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Tipo de entrega</label>
+              <select class="form-select" [(ngModel)]="form.tipo" (change)="toggleDireccion()">
+                <option value="recoger">🏪 Recoger en tienda</option>
+                <option value="domicilio">🚚 Entrega a domicilio</option>
+              </select>
+            </div>
+            <div class="col-12 d-none" id="direccionRow">
+              <label class="form-label">Dirección de entrega</label>
+              <textarea class="form-control" [(ngModel)]="form.direccion" rows="2" placeholder="Calle, número, colonia, ciudad..."></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{ form.tipo === 'domicilio' ? 'Fecha y hora de entrega' : 'Fecha y hora de recogida' }}</label>
+              <input class="form-control" [(ngModel)]="form.fecha" type="datetime-local" [min]="minFecha()" step="1800">
+              <small class="text-muted">Horario {{ OPEN }}:00 – {{ CLOSE }}:00 · Mínimo 1 día de anticipación</small>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Método de pago</label>
+              <select class="form-select" [(ngModel)]="form.pago" (change)="togglePago()">
+                <option value="efectivo">💵 Efectivo contra entrega</option>
+                <option value="tarjeta">💳 Tarjeta de Crédito / Débito</option>
+                <option value="wompi">🔵 Wompi (Tarjeta/PSE/Nequi)</option>
+                <option value="transferencia">🏦 Transferencia</option>
+              </select>
+            </div>
+            <!-- Tarjeta -->
+            <div class="col-12 d-none" id="pagoTarjeta">
+              <div class="payment-panel">
+                <h6 class="payment-panel-title"><i class="bi bi-credit-card me-1"></i>Datos de tarjeta</h6>
+                <div class="row g-2">
+                  <div class="col-12">
+                    <label class="form-label" for="cc-numero">Número de tarjeta</label>
+                    <input class="form-control" id="cc-numero" name="cc-number" [(ngModel)]="form.tarjeta.numero" autocomplete="cc-number" inputmode="numeric" spellcheck="false" placeholder="1234 5678 9012 3456" maxlength="19">
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label" for="cc-vencimiento">Fecha de vencimiento</label>
+                    <input class="form-control" id="cc-vencimiento" name="cc-exp" [(ngModel)]="form.tarjeta.vencimiento" (input)="formatExpiry($event)" autocomplete="cc-exp" inputmode="numeric" placeholder="MM/AA" maxlength="5">
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label" for="cc-cvv">CVV</label>
+                    <input class="form-control" id="cc-cvv" name="cc-csc" [(ngModel)]="form.tarjeta.cvv" autocomplete="cc-csc" inputmode="numeric" placeholder="123" maxlength="4" type="password">
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label" for="cc-nombre">Nombre en la tarjeta</label>
+                    <input class="form-control" id="cc-nombre" name="cc-name" [(ngModel)]="form.tarjeta.nombre" autocomplete="cc-name" placeholder="Como aparece en la tarjeta">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Wompi -->
+            <div class="col-12 d-none" id="pagoWompi">
+              <div class="payment-panel">
+                <h6 class="payment-panel-title"><i class="bi bi-shield-check me-1"></i>Pago seguro con Wompi</h6>
+                <p style="font-size:.85rem;color:var(--muted);margin-bottom:.8rem;">
+                  Serás redirigido a la plataforma de Wompi para completar el pago con:
+                </p>
+                <div class="payment-methods-list">
+                  <span class="pay-chip">Tarjeta crédito</span>
+                  <span class="pay-chip">Tarjeta débito</span>
+                  <span class="pay-chip">PSE</span>
+                  <span class="pay-chip">Nequi</span>
+                  <span class="pay-chip">Bancolombia</span>
+                </div>
+              </div>
+            </div>
+            <!-- Transferencia -->
+            <div class="col-12 d-none" id="pagoTransferencia">
+              <div class="payment-panel">
+                <h6 class="payment-panel-title"><i class="bi bi-bank me-1"></i>Transferencia en Colombia</h6>
+                <p class="mb-1" style="font-size:.85rem;"><strong>Nequi:</strong> 300 123 4567</p>
+                <p class="mb-1" style="font-size:.85rem;"><strong>Bancolombia</strong> — Ahorros: 1234 5678 90</p>
+                <p class="mb-1" style="font-size:.85rem;"><strong>Davivienda</strong> — Ahorros: 9876 5432 10</p>
+                <p class="mb-0" style="font-size:.85rem;"><strong>Titular:</strong> La Flor de Azúcar S.A.S.</p>
+                <hr>
+                <label class="form-label">Adjuntar comprobante de transferencia</label>
+                <input class="form-control" type="file" accept=".jpg,.jpeg,.png,.pdf" (change)="onFileSelect($event)">
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Notas especiales</label>
+              <textarea class="form-control" [(ngModel)]="form.notas" rows="2" placeholder="Mensaje en pastel, alergias, preferencias..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-5">
+          <h6 class="fw-bold mb-3" style="color:var(--chocolate)">Resumen</h6>
+          <div class="order-summary">
+            @for (item of cart.items(); track item.product.id) {
+              <div class="summary-item">
+                <span>{{ item.cantidad }}× {{ item.product.nombre }}</span>
+                <span>{{ fmtCOP(item.product.precio * item.cantidad) }}</span>
+              </div>
+            }
+            <div class="summary-item" style="color:var(--rose);font-weight:600;">
+              <span>Pago</span><span>{{ pagoLabel() }}</span>
+            </div>
+            <div class="summary-item"><span>Subtotal</span><span>{{ fmtCOP(cart.subtotal()) }}</span></div>
+            <div class="summary-item" style="font-size:.82rem;color:var(--muted);"><span>IVA 16%</span><span>{{ fmtCOP(cart.iva()) }}</span></div>
+            <div class="summary-item summary-total">
+              <span>TOTAL</span><span>{{ fmtCOP(cart.total()) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      @if (error()) {
+        <div class="alert alert-danger mt-3 py-2"><i class="bi bi-exclamation-circle me-1"></i> {{ error() }}</div>
+      }
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="close.emit()">Cancelar</button>
+      <button class="btn-confirm-order" (click)="submit()" [disabled]="submitting()">
+        @if (submitting()) {
+          <span class="spinner-border spinner-border-sm me-1"></span>Procesando...
+        } @else {
+          <i class="bi bi-bag-check me-1"></i>Confirmar pedido
+        }
+      </button>
+    </div>
+  </div>
+</div>

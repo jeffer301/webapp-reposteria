@@ -1,0 +1,33 @@
+@use '../../styles-vars' as *;
+
+.toast-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: var(--z-toast, 500);
+}
+
+.toast-bakery {
+  background: $chocolate;
+  color: #fff;
+  border-radius: .8rem;
+  padding: 1rem 1.4rem;
+  margin-bottom: .6rem;
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  box-shadow: 0 8px 24px rgba(45,27,0,.25);
+  font-size: .9rem;
+  animation: toast-in .28s cubic-bezier(.2,0,0,1);
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+.toast-bakery i { color: $gold; font-size: 1.1rem; }
+
+@keyframes toast-in {
+  from { transform: translateX(120%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}

@@ -1,0 +1,38 @@
+@use 'styles-vars' as *;
+
+:root {
+  --cream: #FDF6EC;
+  --rose: #C97B5A;
+  --rose-dark: #A35C3A;
+  --rose-light: #F2D4C2;
+  --chocolate: #2D1B00;
+  --gold: #C9A96E;
+  --gold-light: #F0DEB8;
+  --text: #3A2510;
+  --muted: #9A7B60;
+  --success: #2d7a3a;
+  --danger: #b33a35;
+
+  /* Semantic z-index scale */
+  --z-dropdown:  100;
+  --z-sticky:    110;
+  --z-overlay:   200;
+  --z-sidebar:   201;
+  --z-modal-bg:  300;
+  --z-modal:     301;
+  --z-detail:    400;
+  --z-detail-bg: 399;
+  --z-toast:     500;
+}
+
+section { padding: 5rem 0; }
+
+.section-label { font-size: .75rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: $rose; margin-bottom: .5rem; }
+.section-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3vw, 2.6rem); color: $chocolate; }
+.section-title em { color: $rose; font-style: italic; }
+.divider { width: 60px; height: 3px; background: $gold; margin: 1rem 0 2rem; border-radius: 2px; }
+
+/* Paginación */
+.pagination .page-link { border-color: $rose-light; color: $rose-dark; }
+.pagination .page-link:hover { background: $rose-light; border-color: $rose; }
+.pagination .active .page-link { background: $rose; border-color: $rose; color: #fff; }

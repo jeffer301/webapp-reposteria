@@ -1,0 +1,40 @@
+<div class="cart-overlay" [class.open]="true" (click)="close.emit()"></div>
+<div class="cart-sidebar" [class.open]="true">
+  <div class="cart-header">
+    <h5><i class="bi bi-bag-heart me-2" aria-hidden="true"></i>Tu pedido</h5>
+    <button class="cart-close" (click)="close.emit()" aria-label="Cerrar carrito"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+  </div>
+  <div class="cart-body">
+    @if (cart.items().length === 0) {
+      <div class="empty-cart">
+        <i class="bi bi-bag-x"></i>
+        <p>Tu carrito está vacío</p>
+        <small>¡Agrega algo delicioso!</small>
+      </div>
+    } @else {
+      @for (item of cart.items(); track item.product.id) {
+        <div class="cart-item">
+          <img [src]="item.product.imagen" [alt]="item.product.nombre" width="70" height="70">
+          <div class="cart-item-info">
+            <div class="cart-item-name">{{ item.product.nombre }}</div>
+            <div class="cart-item-price">{{ fmtCOP(item.product.precio * item.cantidad) }}</div>
+            <div class="qty-control">
+              <button class="qty-btn" (click)="cart.updateQty(item.product.id, -1)" [attr.aria-label]="'Reducir cantidad de ' + item.product.nombre">−</button>
+              <span class="qty-num" aria-live="polite">{{ item.cantidad }}</span>
+              <button class="qty-btn" (click)="cart.updateQty(item.product.id, 1)" [attr.aria-label]="'Aumentar cantidad de ' + item.product.nombre">+</button>
+            </div>
+          </div>
+          <button class="btn-remove" (click)="cart.removeFromCart(item.product.id)" [attr.aria-label]="'Eliminar ' + item.product.nombre + ' del carrito'"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+        </div>
+      }
+    }
+  </div>
+  @if (cart.items().length > 0) {
+    <div class="cart-footer">
+      <div class="totals-row"><span>Subtotal</span><span>{{ fmtCOP(cart.subtotal()) }}</span></div>
+      <div class="totals-row" style="font-size:.8rem;color:var(--muted);"><span>IVA 16%</span><span>{{ fmtCOP(cart.iva()) }}</span></div>
+      <div class="totals-row totals-total"><span>Total</span><span>{{ fmtCOP(cart.total()) }}</span></div>
+      <button class="btn-checkout" (click)="checkout.emit()"><i class="bi bi-bag-check me-1" aria-hidden="true"></i>Finalizar pedido</button>
+    </div>
+  }
+</div>

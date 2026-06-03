@@ -1,0 +1,14 @@
+.qr-overlay { position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9998; }
+.qr-modal {
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;
+  background:#fff;border-radius:1rem;width:400px;max-width:90vw;overflow:hidden;
+  box-shadow:0 16px 48px rgba(0,0,0,.3);
+}
+.qr-header { background:#1a1a1a;color:#fff;padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between; }
+.qr-body { padding:1.2rem;text-align:center; }
+.qr-video-wrapper { position:relative;border-radius:.6rem;overflow:hidden;background:#000; }
+.qr-video-wrapper video { width:100%;display:block; }
+.qr-frame {
+  position:absolute;inset:15%;border:3px solid #4caf50;border-radius:.5rem;
+  box-shadow:0 0 0 9999px rgba(0,0,0,.3);pointer-events:none;
+}

@@ -1,0 +1,7 @@
+<div class="toast-container" aria-live="polite" aria-atomic="true" role="status">
+  @for (msg of messages; track msg.id) {
+    <div class="toast-bakery" [style.background]="msg.bg">
+      <span [innerHTML]="msg.html"></span>
+    </div>
+  }
+</div>
