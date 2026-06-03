@@ -488,7 +488,8 @@ docker compose up -d --build
 
 | # | Vista | Descripción |
 |---|---|---|
-| 1 | **Página principal** | Hero section + navbar con contador de carrito |
+| 1 | **Página principal** | Hero section + navbar con contador de carrito |<img width="1907" height="952" alt="image" src="https://github.com/user-attachments/assets/a05808a1-f6cf-426e-8b16-d110e5462992" />
+
 | 2 | **Catálogo con filtros** | Grid de productos, filtro por categoría activo |
 | 3 | **Detalle de producto** | Modal con imagen, ingredientes, alérgenos |
 | 4 | **Carrito de compras** | Sidebar abierto con items y total calculado |
