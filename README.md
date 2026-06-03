@@ -484,21 +484,25 @@ docker compose up -d --build
 
 ## 10. Capturas de Pantalla
 
-> A continuación se sugieren las capturas que mejor ilustran el proyecto para la presentación:
+<img width="1902" height="946" alt="image" src="https://github.com/user-attachments/assets/20c1e618-251c-48d2-90a9-d8e82837d9d2" />
 
-| # | Vista | Descripción |
-|---|---|---|
-| 1 | **Página principal** | Hero section + navbar con contador de carrito |<img width="1907" height="952" alt="image" src="https://github.com/user-attachments/assets/a05808a1-f6cf-426e-8b16-d110e5462992" />
+<img width="1902" height="892" alt="image" src="https://github.com/user-attachments/assets/aa60f5cc-a766-4cd7-868f-9d731c20b057" />
 
-| 2 | **Catálogo con filtros** | Grid de productos, filtro por categoría activo |
-| 3 | **Detalle de producto** | Modal con imagen, ingredientes, alérgenos |
-| 4 | **Carrito de compras** | Sidebar abierto con items y total calculado |
-| 5 | **Checkout** | Formulario completo con tipo de entrega seleccionado |
-| 6 | **Ticket + QR** | Modal de confirmación con código QR imprimible |
-| 7 | **Panel admin — Pedidos** | Lista de pedidos con cambio de estado |
-| 8 | **Panel admin — Escáner QR** | Cámara activa escaneando un ticket |
-| 9 | **Vista móvil** | Cualquiera de las anteriores en resolución 390px |
-| 10 | **docker compose ps** | Terminal mostrando los 3 contenedores `Up (healthy)` |
+<img width="865" height="295" alt="image" src="https://github.com/user-attachments/assets/f9545d7c-b798-4ed0-8440-84e32a86ab1b" />
+
+<img width="1544" height="685" alt="image" src="https://github.com/user-attachments/assets/ad1fff93-4cdd-4279-99e8-eac8d7bad763" />
+
+<img width="1900" height="889" alt="image" src="https://github.com/user-attachments/assets/213fb86a-a907-401f-88de-e7d731081a5e" />
+
+<img width="1877" height="943" alt="image" src="https://github.com/user-attachments/assets/c53cdfde-9109-43a2-b948-384fc76080b5" />
+
+
+
+
+
+
+
+
 
 ---
 
