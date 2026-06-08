@@ -46,7 +46,7 @@ Write-Host "  Copying project files..." -ForegroundColor Gray
 robocopy $PSScriptRoot $releaseDir `
     /E `
     /XD node_modules .git dist .angular uploads _release docs .claude `
-    /XF .env "*.zip" "*.ps1" `
+    /XF .env "*.zip" "*.ps1" RESUMEN-TECNICO.md `
     /NP /NFL /NDL | Out-Null
 
 if ($LASTEXITCODE -ge 8) {
