@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Flor de Azúcar — Documentation</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <style>
+    :root { --sidebar-width: 260px; --primary: #C97B5A; }
+    body { font-family: 'Segoe UI', sans-serif; }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: var(--sidebar-width); min-height: 100vh; background: #1a1a2e;
+      color: #cdd6f4; position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 100;
+    }
+    #sidebar .brand { padding: 1.5rem 1.25rem 1rem; border-bottom: 1px solid #2a2a4a; }
+    #sidebar .brand h5 { color: var(--primary); margin: 0; font-size: 1rem; }
+    #sidebar .brand small { color: #888; font-size: 0.75rem; }
+    #sidebar .nav-link {
+      color: #aab2c8; padding: 0.45rem 1.25rem; font-size: 0.875rem;
+      border-left: 3px solid transparent; transition: all 0.2s;
+    }
+    #sidebar .nav-link:hover, #sidebar .nav-link.active {
+      color: #fff; background: rgba(201,123,90,0.1); border-left-color: var(--primary);
+    }
+    #sidebar .nav-section {
+      padding: 1rem 1.25rem 0.25rem; font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.1em; color: #555;
+    }
+
+    /* ── Main ── */
+    #main { margin-left: var(--sidebar-width); padding: 2rem 3rem; max-width: 860px; }
+    h2 { color: #1a1a2e; margin-top: 3rem; padding-top: 1rem; border-top: 2px solid #f0f0f0; }
+    h2:first-of-type { border-top: none; margin-top: 0; }
+    h3 { color: #333; margin-top: 1.75rem; }
+    h4 { color: #555; margin-top: 1.25rem; }
+    pre code { border-radius: 6px; font-size: 0.85rem; }
+
+    .step-box {
+      border-left: 4px solid var(--primary); padding: 0.75rem 1rem;
+      background: #fff8f5; margin: 0.5rem 0; border-radius: 0 6px 6px 0;
+    }
+    .step-box .step-num { font-weight: 700; color: var(--primary); margin-right: 0.5rem; }
+
+    .info-box {
+      background: #e8f4fd; border-left: 4px solid #2196f3;
+      padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0;
+    }
+    .warn-box {
+      background: #fff3e0; border-left: 4px solid #ff9800;
+      padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0;
+    }
+
+    table thead { background: #1a1a2e; color: white; }
+    .accordion-button:not(.collapsed) { background: #fff8f5; color: var(--primary); }
+    .accordion-button:focus { box-shadow: 0 0 0 0.2rem rgba(201,123,90,0.25); }
+
+    @media (max-width: 768px) {
+      #sidebar { display: none; }
+      #main { margin-left: 0; padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════ SIDEBAR -->
+<nav id="sidebar">
+  <div class="brand">
+    <h5>🍰 La Flor de Azúcar</h5>
+    <small>Bakery Web App &mdash; v1.0.0</small>
+  </div>
+  <ul class="nav flex-column mt-2">
+    <li class="nav-section">Getting Started</li>
+    <li><a class="nav-link" href="#introduction">Introduction</a></li>
+    <li><a class="nav-link" href="#requirements">Requirements</a></li>
+    <li><a class="nav-link" href="#installation">Installation</a></li>
+    <li class="nav-section">Configuration</li>
+    <li><a class="nav-link" href="#env-vars">Environment Variables</a></li>
+    <li><a class="nav-link" href="#payments">Payment Gateways</a></li>
+    <li class="nav-section">Usage</li>
+    <li><a class="nav-link" href="#admin">Admin Panel</a></li>
+    <li class="nav-section">Support</li>
+    <li><a class="nav-link" href="#faq">FAQ</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════ MAIN -->
+<main id="main">
+
+  <!-- ── 1. INTRODUCTION ───────────────────────────────────────────── -->
+  <section id="introduction">
+    <h2>Introduction &amp; Features</h2>
+    <p>
+      <strong>La Flor de Azúcar</strong> is a full-stack web application for artisan bakeries to sell their
+      products online. Customers browse the catalog, add items to a persistent cart, and complete checkout
+      &mdash; receiving a <strong>printable ticket with a unique QR code</strong> by email.
+      The store owner manages orders, products, and users through a built-in admin panel, and verifies
+      pickups by scanning QR codes with the device camera.
+    </p>
+    <p>
+      Built with <strong>Angular 21 + Node.js / Express + PostgreSQL</strong>, fully Dockerized, and
+      integrated with <strong>Wompi</strong> (Colombian payment gateway).
+    </p>
+
+    <h3>Key Features</h3>
+    <div class="row g-3 mt-1">
+      <div class="col-md-6">
+        <ul>
+          <li>Product catalog with images, prices &amp; discounts</li>
+          <li>Category filters &amp; keyword search</li>
+          <li>Persistent cart (no login required)</li>
+          <li>Full checkout: pickup or home delivery</li>
+          <li>Unique QR code per order</li>
+          <li>Printable order ticket modal</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <ul>
+          <li>Transactional email notifications</li>
+          <li>Public order status verification page</li>
+          <li>Admin panel: orders, products, categories, users</li>
+          <li>Live QR scanner via device camera</li>
+          <li>Wompi payment gateway integration</li>
+          <li>PWA &mdash; installable on mobile &amp; desktop</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Stack Overview</h3>
+    <table class="table table-bordered mt-2">
+      <thead><tr><th>Layer</th><th>Technology</th></tr></thead>
+      <tbody>
+        <tr><td>Frontend</td><td>Angular 21, TypeScript, Bootstrap 5, SCSS</td></tr>
+        <tr><td>Backend</td><td>Node.js 20, Express 4, JWT, bcrypt, Multer, Nodemailer</td></tr>
+        <tr><td>Database</td><td>PostgreSQL 16 — raw SQL, no ORM</td></tr>
+        <tr><td>Payments</td><td>Wompi (Colombia) — sandbox &amp; production</td></tr>
+        <tr><td>Infrastructure</td><td>Docker Compose, Nginx, multi-stage builds</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── 2. REQUIREMENTS ───────────────────────────────────────────── -->
+  <section id="requirements">
+    <h2>Requirements</h2>
+
+    <h3>Method A &mdash; Manual Installation</h3>
+    <table class="table table-bordered">
+      <thead><tr><th>Tool</th><th>Minimum Version</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Node.js</td><td>20 LTS</td><td><a href="https://nodejs.org" target="_blank">nodejs.org</a></td></tr>
+        <tr><td>npm</td><td>10+</td><td>Included with Node 20</td></tr>
+        <tr><td>PostgreSQL</td><td>16</td><td>Must be running locally</td></tr>
+        <tr><td>Angular CLI</td><td>Latest</td><td><code>npm install -g @angular/cli</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Method B &mdash; Docker (Recommended)</h3>
+    <table class="table table-bordered">
+      <thead><tr><th>Tool</th><th>Version</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Docker Desktop</td><td>24+</td><td><a href="https://docker.com/get-started" target="_blank">docker.com/get-started</a></td></tr>
+        <tr><td>Docker Compose</td><td>v2</td><td>Included with Docker Desktop</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box">
+      <strong>Docker is recommended</strong> &mdash; it runs PostgreSQL, Backend, and Frontend/Nginx with a
+      single command and requires no manual environment setup.
+    </div>
+  </section>
+
+  <!-- ── 3. INSTALLATION ───────────────────────────────────────────── -->
+  <section id="installation">
+    <h2>Installation</h2>
+
+    <h3>Method A &mdash; Manual Installation</h3>
+
+    <h4>Backend</h4>
+    <div class="step-box"><span class="step-num">1.</span> Copy the environment template:</div>
+    <pre><code class="language-bash">cd backend
+cp .env.example .env
+# On Windows:
+copy backend\.env.example backend\.env</code></pre>
+
+    <div class="step-box"><span class="step-num">2.</span>
+      Open <code>backend/.env</code> and fill in your PostgreSQL credentials.
+      See <a href="#env-vars">Environment Variables</a> for the full reference.
+    </div>
+
+    <div class="step-box"><span class="step-num">3.</span> Install dependencies and run database migrations:</div>
+    <pre><code class="language-bash">npm install
+npm run migrate</code></pre>
+    <p>
+      This creates all tables, indexes, and inserts demo data:
+      5 categories, 8 products, and 1 admin user (<code>admin@bakery.com</code> / <code>Admin123</code>).
+    </p>
+
+    <div class="step-box"><span class="step-num">4.</span> Start the backend server:</div>
+    <pre><code class="language-bash">npm run dev
+# API running at http://localhost:3000
+# Health check: http://localhost:3000/health</code></pre>
+
+    <h4>Frontend</h4>
+    <div class="step-box"><span class="step-num">5.</span> Open a second terminal in <code>bakery-frontend/</code>:</div>
+    <pre><code class="language-bash">cd bakery-frontend
+npm install
+ng serve
+# App available at http://localhost:4200</code></pre>
+
+    <div class="info-box">
+      <code>bakery-frontend/proxy.conf.json</code> automatically forwards all <code>/api/*</code> requests
+      to <code>http://localhost:3000</code> &mdash; no CORS configuration needed in development.
+    </div>
+
+    <hr class="my-4">
+
+    <h3>Method B &mdash; Docker (Recommended)</h3>
+
+    <div class="step-box"><span class="step-num">1.</span> Copy the environment template:</div>
+    <pre><code class="language-bash">cp backend/.env.example backend/.env
+# On Windows:
+copy backend\.env.example backend\.env</code></pre>
+
+    <div class="step-box"><span class="step-num">2.</span>
+      Edit <code>backend/.env</code> &mdash; at minimum set <code>DB_PASSWORD</code> and <code>JWT_SECRET</code>.
+    </div>
+
+    <div class="step-box"><span class="step-num">3.</span> Build and start all services:</div>
+    <pre><code class="language-bash">docker compose up --build</code></pre>
+
+    <p>This single command:</p>
+    <ul>
+      <li>Builds backend (Node.js) and frontend (Angular → Nginx) images</li>
+      <li>Downloads the official PostgreSQL 16 Alpine image</li>
+      <li>Runs database migrations automatically on first start</li>
+      <li>Seeds demo data (categories, products, admin user)</li>
+      <li>Starts all three containers with health checks</li>
+    </ul>
+
+    <table class="table table-sm table-bordered mt-3">
+      <thead><tr><th>Service</th><th>URL</th></tr></thead>
+      <tbody>
+        <tr><td>Frontend</td><td><code>http://localhost</code></td></tr>
+        <tr><td>API</td><td><code>http://localhost:3000</code></td></tr>
+        <tr><td>Health check</td><td><code>http://localhost/health</code></td></tr>
+      </tbody>
+    </table>
+
+    <div class="warn-box">
+      <strong>Windows users:</strong> Double-click <code>start.bat</code> at the project root to launch
+      both backend and frontend simultaneously in development mode (without Docker).
+    </div>
+  </section>
+
+  <!-- ── 4. ENVIRONMENT VARIABLES ─────────────────────────────────── -->
+  <section id="env-vars">
+    <h2>Environment Variables</h2>
+    <p>
+      All configuration lives in <code>backend/.env</code> (copied from <code>backend/.env.example</code>).
+      Never commit the real <code>.env</code> file to version control.
+    </p>
+
+    <h3>Required</h3>
+    <table class="table table-bordered">
+      <thead><tr><th>Variable</th><th>Description</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><code>DB_PASSWORD</code></td><td>PostgreSQL password</td><td><code>MySecurePass2024!</code></td></tr>
+        <tr>
+          <td><code>JWT_SECRET</code></td>
+          <td>Secret key for signing JWT tokens &mdash; <strong>minimum 32 characters</strong></td>
+          <td><em>(generate below)</em></td>
+        </tr>
+        <tr><td><code>DOMAIN</code></td><td>Public domain &mdash; production only</td><td><code>mybakery.com</code></td></tr>
+      </tbody>
+    </table>
+
+    <p>Generate a cryptographically secure <code>JWT_SECRET</code>:</p>
+    <pre><code class="language-bash">node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"</code></pre>
+
+    <h3>Optional (with defaults)</h3>
+    <table class="table table-bordered table-sm">
+      <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>DB_HOST</code></td><td><code>localhost</code></td><td>PostgreSQL host</td></tr>
+        <tr><td><code>DB_PORT</code></td><td><code>5432</code></td><td>PostgreSQL port</td></tr>
+        <tr><td><code>DB_NAME</code></td><td><code>reposteria</code></td><td>Database name</td></tr>
+        <tr><td><code>DB_USER</code></td><td><code>postgres</code></td><td>Database user</td></tr>
+        <tr><td><code>PORT</code></td><td><code>3000</code></td><td>Express server port</td></tr>
+        <tr><td><code>NODE_ENV</code></td><td><code>development</code></td><td><code>development</code> or <code>production</code></td></tr>
+        <tr><td><code>SMTP_HOST</code></td><td>&mdash;</td><td>SMTP server hostname</td></tr>
+        <tr><td><code>SMTP_PORT</code></td><td><code>587</code></td><td>SMTP port (587 = TLS, 465 = SSL)</td></tr>
+        <tr><td><code>SMTP_USER</code></td><td>&mdash;</td><td>SMTP username / email address</td></tr>
+        <tr><td><code>SMTP_PASS</code></td><td>&mdash;</td><td>SMTP password or app password</td></tr>
+        <tr><td><code>PAYMENT_PROVIDER</code></td><td><code>wompi</code></td><td><code>wompi</code>, <code>stripe</code>, or <code>mercadopago</code></td></tr>
+        <tr><td><code>WOMPI_API_URL</code></td><td><code>https://sandbox.wompi.co/v1</code></td><td>Wompi endpoint URL</td></tr>
+        <tr><td><code>WOMPI_PUBLIC_KEY</code></td><td>&mdash;</td><td>Wompi public key</td></tr>
+        <tr><td><code>WOMPI_PRIVATE_KEY</code></td><td>&mdash;</td><td>Wompi private key</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">
+      For testing emails without a real SMTP server, create a free temporary account at
+      <a href="https://ethereal.email" target="_blank">ethereal.email</a> &mdash;
+      it captures all outgoing mail without actually sending anything.
+    </div>
+  </section>
+
+  <!-- ── 5. PAYMENT GATEWAYS ───────────────────────────────────────── -->
+  <section id="payments">
+    <h2>Switching Payment Gateways</h2>
+    <p>
+      The payment system uses a <strong>provider pattern</strong> &mdash; switching gateways requires
+      changing a single environment variable. The active provider is selected by
+      <code>PAYMENT_PROVIDER</code> in <code>backend/.env</code>.
+    </p>
+
+    <table class="table table-bordered">
+      <thead><tr><th>Value</th><th>Gateway</th><th>Status</th><th>Target Market</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>wompi</code></td><td>Wompi</td>
+          <td><span class="badge bg-success">Active</span></td>
+          <td>Colombia</td>
+        </tr>
+        <tr>
+          <td><code>stripe</code></td><td>Stripe</td>
+          <td><span class="badge bg-secondary">Stub &mdash; ready to extend</span></td>
+          <td>Global</td>
+        </tr>
+        <tr>
+          <td><code>mercadopago</code></td><td>MercadoPago</td>
+          <td><span class="badge bg-secondary">Stub &mdash; ready to extend</span></td>
+          <td>Latin America</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Activating Wompi (Default)</h3>
+    <p>Get your sandbox keys at <a href="https://comercios.wompi.co" target="_blank">comercios.wompi.co</a>.</p>
+    <pre><code class="language-bash"># backend/.env
+PAYMENT_PROVIDER=wompi
+WOMPI_API_URL=https://sandbox.wompi.co/v1
+WOMPI_PUBLIC_KEY=pub_test_xxxxxxxxxxxxxxxx
+WOMPI_PRIVATE_KEY=prv_test_xxxxxxxxxxxxxxxx</code></pre>
+    <p>
+      For production, change <code>WOMPI_API_URL</code> to
+      <code>https://production.wompi.co/v1</code> and replace the test keys with your live keys.
+    </p>
+
+    <h3>Extending to Stripe or MercadoPago</h3>
+    <p>
+      Stub providers are located at <code>backend/src/services/providers/</code>.
+      Each extends <code>PaymentProvider.js</code> and must implement <code>processPayment(order)</code>:
+    </p>
+    <pre><code class="language-javascript">// backend/src/services/providers/StripeProvider.js
+class StripeProvider extends PaymentProvider {
+  async processPayment(order) {
+    // Implement Stripe Charges API call here
+    // Must return: { success: true, reference: chargeId }
+  }
+}</code></pre>
+    <p>Then set <code>PAYMENT_PROVIDER=stripe</code> in <code>backend/.env</code> and restart the server.</p>
+  </section>
+
+  <!-- ── 6. ADMIN PANEL ────────────────────────────────────────────── -->
+  <section id="admin">
+    <h2>Accessing the Admin Panel</h2>
+
+    <h3>Default Credentials</h3>
+    <table class="table table-bordered">
+      <thead><tr><th>Field</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>URL (Docker / production)</td><td><code>http://localhost/admin</code></td></tr>
+        <tr><td>URL (development)</td><td><code>http://localhost:4200/admin</code></td></tr>
+        <tr><td>Email</td><td><code>admin@bakery.com</code></td></tr>
+        <tr><td>Password</td><td><code>Admin123</code></td></tr>
+      </tbody>
+    </table>
+    <div class="warn-box">
+      <strong>Change the default password immediately</strong> before going to production.
+      Go to <strong>Users</strong> tab &rarr; find the admin account &rarr; update password.
+    </div>
+
+    <h3>Admin Panel Tabs</h3>
+    <table class="table table-bordered">
+      <thead><tr><th>Tab</th><th>Capabilities</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Orders</strong></td>
+          <td>View all orders, filter by status, transition states:
+            <em>pending &rarr; confirmed &rarr; preparing &rarr; ready &rarr; delivered / cancelled</em>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Products</strong></td>
+          <td>Full CRUD: name, description, price, discount price, stock, images, ingredients, allergens, category, featured flag</td>
+        </tr>
+        <tr>
+          <td><strong>Categories</strong></td>
+          <td>Create, edit, and delete product categories with images</td>
+        </tr>
+        <tr>
+          <td><strong>Users</strong></td>
+          <td>View all registered users, promote / demote between <code>cliente</code> and <code>admin</code> roles</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>QR Scanner</h3>
+    <p>
+      Click the <strong>QR Scanner</strong> button in the admin panel to activate the device camera.
+      Hold a customer's order ticket QR code in front of the camera &mdash;
+      order details appear instantly for in-store pickup verification.
+    </p>
+    <div class="info-box">
+      The QR scanner requires <strong>camera permission</strong> in the browser.
+      On mobile, the site must be served over HTTPS (HTTP is only allowed on localhost).
+    </div>
+
+    <h3>Granting Admin Access to Another User</h3>
+    <ol>
+      <li>Log in as an existing admin.</li>
+      <li>Go to the <strong>Users</strong> tab in the admin panel.</li>
+      <li>Find the user and click <strong>Change Role &rarr; Admin</strong>.</li>
+    </ol>
+
+    <h3>Order Status Flow</h3>
+    <pre><code class="language-bash">pending → confirmed → preparing → ready → delivered
+                                         ↘ cancelled  (from any state)</code></pre>
+    <p>
+      Each transition triggers an email notification to the customer with the new status.
+      Customers can track their order in real time at <code>/verify/&lt;order-code&gt;</code>
+      without needing to log in.
+    </p>
+  </section>
+
+  <!-- ── 7. FAQ ─────────────────────────────────────────────────────── -->
+  <section id="faq">
+    <h2>FAQ</h2>
+    <div class="accordion" id="faqAccordion">
+
+      <div class="accordion-item">
+        <h3 class="accordion-header">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#faq1">
+            Emails are not being sent &mdash; what's wrong?
+          </button>
+        </h3>
+        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <p>Set your SMTP credentials in <code>backend/.env</code>:</p>
+            <pre><code class="language-bash">SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password</code></pre>
+            <p>
+              For <strong>Gmail</strong>, generate an App Password (not your regular password) at<br>
+              <em>Google Account &rarr; Security &rarr; 2-Step Verification &rarr; App passwords</em>.
+            </p>
+            <p>
+              For testing without a real mail server, use
+              <a href="https://ethereal.email" target="_blank">ethereal.email</a>
+              &mdash; it captures all mail without delivering it.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h3 class="accordion-header">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#faq2">
+            The QR scanner shows a black screen or "camera not available"
+          </button>
+        </h3>
+        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <p>Browsers restrict camera access to <strong>HTTPS</strong> or <strong>localhost</strong>:</p>
+            <ul>
+              <li>In development: use <code>http://localhost:4200</code> (not your LAN IP address)</li>
+              <li>In production: serve the app over HTTPS (Nginx SSL config is included)</li>
+              <li>Grant camera permission when the browser prompts you</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h3 class="accordion-header">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#faq3">
+            How do I install the app as a PWA on my phone?
+          </button>
+        </h3>
+        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <ul>
+              <li><strong>Android (Chrome):</strong> tap the three-dot menu &rarr; <em>Add to Home Screen</em></li>
+              <li><strong>iOS (Safari):</strong> tap the Share icon &rarr; <em>Add to Home Screen</em></li>
+              <li><strong>Desktop (Chrome / Edge):</strong> click the install icon in the address bar</li>
+            </ul>
+            <p>PWA install requires HTTPS in production.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h3 class="accordion-header">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#faq4">
+            How do I change the store name, logo, and brand color?
+          </button>
+        </h3>
+        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <ul>
+              <li><strong>Store name:</strong> edit <code>bakery-frontend/src/app/components/navbar/navbar.html</code> and <code>hero/hero.html</code></li>
+              <li><strong>Logo / favicon:</strong> replace <code>bakery-frontend/src/assets/logo.png</code> and <code>favicon.ico</code></li>
+              <li><strong>Brand color:</strong> update the <code>--primary</code> CSS variable in <code>bakery-frontend/src/app/styles-vars.scss</code></li>
+              <li><strong>Email sender name:</strong> edit the <code>from</code> field in <code>backend/src/services/emailService.js</code></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h3 class="accordion-header">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#faq5">
+            Can I run this without Docker?
+          </button>
+        </h3>
+        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <p>
+              Yes &mdash; follow <strong>Method A (Manual Installation)</strong> above.
+              You need Node.js 20, PostgreSQL 16, and Angular CLI installed locally.
+              Docker is recommended because it handles all dependencies automatically
+              and ensures a consistent environment.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h3 class="accordion-header">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#faq6">
+            How do I enable HTTPS / SSL in production?
+          </button>
+        </h3>
+        <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <p>The Nginx config (<code>bakery-frontend/nginx.conf</code>) is pre-configured for SSL.</p>
+            <p><strong>Option A &mdash; Self-signed certificate (internal / testing):</strong></p>
+            <pre><code class="language-bash">mkdir certs
+docker run --rm -v "$(pwd)/certs:/certs" alpine sh -c \
+  'apk add openssl && openssl req -x509 -nodes -days 365 \
+   -newkey rsa:2048 -keyout /certs/privkey.pem \
+   -out /certs/fullchain.pem -subj "/CN=YOUR_SERVER_IP"'</code></pre>
+            <p>
+              <strong>Option B &mdash; Let's Encrypt (production with a domain):</strong>
+              use Certbot to generate certificates and mount them into the Nginx container
+              at <code>/etc/nginx/certs/</code>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h3 class="accordion-header">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#faq7">
+            Where do uploaded product images get stored?
+          </button>
+        </h3>
+        <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            <p>
+              Images uploaded through the admin panel are stored in <code>backend/uploads/</code>.
+              In Docker, this folder is mounted as a named volume (<code>uploads_data</code>)
+              that persists across container restarts and rebuilds.
+            </p>
+            <p>
+              For production at scale, consider moving images to cloud object storage
+              (AWS S3, Cloudflare R2) by updating <code>backend/src/controllers/uploadController.js</code>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /accordion -->
+
+    <hr class="mt-5">
+    <p class="text-muted mt-3">
+      Still need help? Contact support at
+      <a href="mailto:je.301@hotmail.com">je.301@hotmail.com</a>
+      or open a ticket through your Envato purchase page.
+    </p>
+  </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+  hljs.highlightAll();
+
+  // Highlight active sidebar link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('#sidebar .nav-link');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.id; });
+    navLinks.forEach(l => {
+      l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>
