@@ -21,3 +21,7 @@ backend/uploads/
 # Archivos de build temporales
 /tmp
 /out-tsc
+
+# CodeCanyon release artifacts
+*.zip
+_release/
