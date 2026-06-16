@@ -209,34 +209,43 @@ bakery-app/
 │       ├── routes/
 │       │   └── index.js        # Centralizador de rutas
 │       └── services/
-│           ├── emailService.js # Nodemailer (confirmaciones)
-│           ├── pagoService.js  # Orquestador de pagos
+│           ├── emailService.js # Nodemailer (confirmaciones de pedido y cambio de estado)
+│           ├── pagoService.js  # Orquestador de pagos (selecciona proveedor activo)
 │           └── providers/
-│               ├── PaymentProvider.js    # Interfaz base
-│               ├── PaymentFactory.js     # Selector de proveedor
-│               ├── WompiProvider.js      # Integración Wompi
-│               ├── StripeProvider.js     # Integración Stripe (stub)
-│               └── MercadoPagoProvider.js # Integración MP (stub)
+│               ├── PaymentProvider.js     # Interfaz base (contrato común)
+│               ├── PaymentFactory.js      # Factory: selecciona proveedor según .env
+│               ├── WompiProvider.js       # Integración Wompi (activo)
+│               ├── StripeProvider.js      # Integración Stripe (stub)
+│               └── MercadoPagoProvider.js # Integración MercadoPago (stub)
 │
 └── bakery-frontend/            # SPA Angular 21
     ├── Dockerfile              # Multi-stage: ng build → nginx
     ├── nginx.conf              # Proxy inverso + SSL + compresión
+    ├── angular.json            # Configuración del proyecto Angular
     ├── proxy.conf.json         # Proxy de desarrollo (→ localhost:3000)
     └── src/app/
+        ├── app.ts / .html / .scss / .config.ts / .routes.ts
         ├── models.ts           # Interfaces: Product, CartItem, Order, User
+        ├── styles-vars.scss    # Variables SCSS globales (colores, tipografías)
         ├── services/
         │   ├── api.ts          # HTTP wrapper con interceptor JWT
         │   ├── auth.ts         # Estado de autenticación (Signals)
         │   ├── cart.ts         # Carrito (Signals + localStorage)
         │   └── product.ts      # Productos (Signals + paginación)
         └── components/
-            ├── navbar/         ├── hero/
-            ├── product-grid/   ├── product-detail/
-            ├── cart-sidebar/   ├── checkout-modal/
-            ├── ticket-modal/   ├── auth-modal/
-            ├── admin/          ├── qr-scanner/
-            ├── verifier/       ├── toast/
-            └── footer/
+            ├── navbar/         # Navbar sticky con carrito y menú de usuario
+            ├── hero/           # Hero section con llamado a la acción
+            ├── product-grid/   # Grid con filtros por categoría y búsqueda
+            ├── product-detail/ # Modal detalle: descripción, ingredientes, alérgenos
+            ├── cart-sidebar/   # Carrito lateral deslizable
+            ├── checkout-modal/ # Formulario de checkout completo
+            ├── ticket-modal/   # Ticket imprimible con código QR
+            ├── auth-modal/     # Login / Registro con tabs
+            ├── admin/          # Panel admin (4 pestañas)
+            ├── qr-scanner/     # Escáner QR en tiempo real con cámara
+            ├── verifier/       # Verificador público de pedidos por código
+            ├── toast/          # Notificaciones tipo toast
+            └── footer/         # Footer con información de contacto
 ```
 
 ---
@@ -484,25 +493,20 @@ docker compose up -d --build
 
 ## 10. Capturas de Pantalla
 
-<img width="1902" height="946" alt="image" src="https://github.com/user-attachments/assets/20c1e618-251c-48d2-90a9-d8e82837d9d2" />
+> A continuación se sugieren las capturas que mejor ilustran el proyecto para la presentación:
 
-<img width="1902" height="892" alt="image" src="https://github.com/user-attachments/assets/aa60f5cc-a766-4cd7-868f-9d731c20b057" />
-
-<img width="865" height="295" alt="image" src="https://github.com/user-attachments/assets/f9545d7c-b798-4ed0-8440-84e32a86ab1b" />
-
-<img width="1544" height="685" alt="image" src="https://github.com/user-attachments/assets/ad1fff93-4cdd-4279-99e8-eac8d7bad763" />
-
-<img width="1900" height="889" alt="image" src="https://github.com/user-attachments/assets/213fb86a-a907-401f-88de-e7d731081a5e" />
-
-<img width="1877" height="943" alt="image" src="https://github.com/user-attachments/assets/c53cdfde-9109-43a2-b948-384fc76080b5" />
-
-
-
-
-
-
-
-
+| # | Vista | Descripción |
+|---|---|---|
+| 1 | **Página principal** | Hero section + navbar con contador de carrito |
+| 2 | **Catálogo con filtros** | Grid de productos, filtro por categoría activo |
+| 3 | **Detalle de producto** | Modal con imagen, ingredientes, alérgenos |
+| 4 | **Carrito de compras** | Sidebar abierto con items y total calculado |
+| 5 | **Checkout** | Formulario completo con tipo de entrega seleccionado |
+| 6 | **Ticket + QR** | Modal de confirmación con código QR imprimible |
+| 7 | **Panel admin — Pedidos** | Lista de pedidos con cambio de estado |
+| 8 | **Panel admin — Escáner QR** | Cámara activa escaneando un ticket |
+| 9 | **Vista móvil** | Cualquiera de las anteriores en resolución 390px |
+| 10 | **docker compose ps** | Terminal mostrando los 3 contenedores `Up (healthy)` |
 
 ---
 
@@ -514,15 +518,13 @@ docker compose up -d --build
 | Yensy Daniel Montaño Sánchez | Desarrollo Full-Stack | 
 | Jose Manuel Salas Valencia | Desarrollo Full-Stack | 
 
-**Institución:** Universidad del Pacifico  
+**Institución:** Universidad del Pacífico  
+**Programa:** Ingeniería en Sistemas  
+**Materia:** Seminario I  
+**Docente:** Gonzalo Andrés Lucio López  
+**Período:** 2026-I  
 
-**Programa:** Ingenieria En Sistemas 
-
-**Materia:** Seminario I
-
-**Docente:** Gonzalo Andres Lucio Lopez 
-
-**Período:** 2026-I
+> Para documentación técnica detallada (base de datos, deuda técnica, métricas de código) ver [`RESUMEN-TECNICO.md`](RESUMEN-TECNICO.md).
 
 ---
 
