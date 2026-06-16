@@ -524,7 +524,6 @@ docker compose up -d --build
 **Docente:** Gonzalo Andrés Lucio López  
 **Período:** 2026-I  
 
-> Para documentación técnica detallada (base de datos, deuda técnica, métricas de código) ver [`RESUMEN-TECNICO.md`](RESUMEN-TECNICO.md).
 
 ---
 
