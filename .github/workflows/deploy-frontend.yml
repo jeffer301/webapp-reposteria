@@ -1,5 +1,4 @@
 name: Deploy Bakery Frontend
-# Re-trigger: SSH key authorized on server 2026-06-16
 
 on:
   push:
