@@ -1,0 +1,26 @@
+@use '../../styles-vars' as *;
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: var(--z-modal-bg, 300); }
+.modal-show { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: var(--z-modal, 301); max-height: 90vh; overflow-y: auto; }
+.modal-bakery .modal-content { border-radius: 1.2rem; border: none; background: #fff; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+.modal-bakery .modal-header { background: $chocolate; color: #fff; border-radius: 1.2rem 1.2rem 0 0; }
+.modal-bakery .modal-title { font-family: 'Playfair Display', serif; color: $gold; }
+
+.btn-auth-submit {
+  background: $rose;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: .75rem 1.5rem;
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s;
+  letter-spacing: .03em;
+  &:hover { background: $rose-dark; }
+  &:disabled {
+    background: #ccc;
+    color: #888;
+    cursor: not-allowed;
+  }
+}

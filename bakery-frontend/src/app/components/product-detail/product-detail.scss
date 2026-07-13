@@ -1,0 +1,28 @@
+@use '../../styles-vars' as *;
+
+.detail-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: var(--z-detail-bg, 399); }
+.detail-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: var(--z-detail, 400); background: #fff; border-radius: 1.5rem; width: min(800px, 94vw); max-height: 90vh; overflow-y: auto; box-shadow: 0 30px 80px rgba(0,0,0,.4); }
+.detail-close { position: absolute; top: 1rem; right: 1rem; z-index: 5; background: rgba(255,255,255,.9); border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1rem; cursor: pointer; transition: background-color .2s, color .2s; display: flex; align-items: center; justify-content: center; }
+.detail-close:hover { background: $rose; color: #fff; }
+.detail-img { width: 100%; height: 100%; min-height: 350px; object-fit: cover; border-radius: 1.5rem 0 0 1.5rem; }
+.detail-body { padding: 2.5rem; display: flex; flex-direction: column; gap: .8rem; }
+.detail-category { font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: $muted; }
+.detail-name { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: $chocolate; margin: 0; }
+.detail-price { font-size: 2rem; font-weight: 700; color: $rose; }
+.detail-price span { font-size: .9rem; font-weight: 400; color: $muted; }
+.detail-desc { font-size: .95rem; color: $text; line-height: 1.6; }
+.detail-alergenos { background: #FFF8F0; border-radius: .6rem; padding: .8rem 1rem; font-size: .85rem; color: $muted; }
+.detail-stock { font-size: .9rem; }
+.btn-add-detail { margin-top: auto; background: $rose; color: #fff; border: none; border-radius: 50px; padding: 1rem 2rem; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: background-color .2s, transform .2s, box-shadow .2s; letter-spacing: .02em; }
+.btn-add-detail:hover { background: $rose-dark; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,123,90,.4); }
+.btn-add-detail:disabled { background: #ccc; color: #888; cursor: not-allowed; transform: none; box-shadow: none; }
+.badge-dest { background: $gold; color: $chocolate; font-size: .7rem; font-weight: 700; letter-spacing: .08em; padding: .25rem .7rem; border-radius: 50px; }
+
+@media (max-width: 767px) {
+  .detail-modal { border-radius: 1rem; }
+  .detail-img { border-radius: 1rem 1rem 0 0; min-height: 220px; max-height: 260px; }
+  .detail-body { padding: 1.5rem; }
+  .detail-name { font-size: 1.4rem; }
+  .detail-price { font-size: 1.6rem; }
+  .btn-add-detail { padding: .85rem 1.5rem; font-size: 1rem; }
+}

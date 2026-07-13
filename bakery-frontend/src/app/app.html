@@ -1,0 +1,38 @@
+<a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+
+<app-navbar (toggleCart)="toggleCart()" (toggleAuth)="openAuth()" (toggleAdmin)="toggleAdmin()" />
+
+<main id="main-content">
+  <app-hero />
+  <app-product-grid (selectProduct)="selectProduct($event)" />
+</main>
+
+@if (selectedProduct) {
+  <app-product-detail [product]="selectedProduct" (close)="closeDetail()" />
+}
+
+@if (cartOpen) {
+  <app-cart-sidebar (close)="toggleCart()" (checkout)="openCheckout()" />
+}
+
+@if (modal === 'checkout') {
+  <app-checkout-modal (close)="closeModal()" (done)="onDone($event)" />
+}
+
+@if (modal === 'ticket' && order) {
+  <app-ticket-modal [order]="order" (close)="closeModal()" />
+}
+
+@if (authOpen) {
+  <app-auth-modal (close)="closeAuth()" />
+}
+
+@if (adminOpen) {
+  <app-admin id="admin-panel" (close)="toggleAdmin()" />
+}
+
+<app-verifier />
+
+<app-footer />
+
+<app-toast />

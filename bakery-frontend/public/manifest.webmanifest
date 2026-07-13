@@ -1,0 +1,16 @@
+{
+  "name": "La Flor de Azúcar - Repostería Artesanal",
+  "short_name": "Flor de Azúcar",
+  "description": "Tienda online de repostería artesanal. Pasteles, cupcakes, galletas y más.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FDF6EC",
+  "theme_color": "#C97B5A",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "favicon.ico", "sizes": "48x48", "type": "image/x-icon" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

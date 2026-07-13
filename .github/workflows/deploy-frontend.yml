@@ -1,0 +1,75 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'bakery-frontend/**'
+      - 'docker-compose.vps.yml'
+      - '.github/workflows/deploy-frontend.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: bakery-vps-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Copiar archivos al VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "bakery-frontend/,docker-compose.vps.yml"
+          target: "/var/www/seminario1/bakery"
+          strip_components: 0
+          overwrite: true
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          request_pty: true
+          script: |
+            set -e
+
+            if [ -d "/var/www/seminario1/bakery/webapp-reposteria" ]; then
+              cp -r /var/www/seminario1/bakery/webapp-reposteria/* /var/www/seminario1/bakery/
+              rm -rf /var/www/seminario1/bakery/webapp-reposteria
+            fi
+
+            cd /var/www/seminario1/bakery
+
+            cat <<ENVEOF > .env
+            DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+            JWT_SECRET="${{ secrets.JWT_SECRET }}"
+            DOMAIN="bakery.seminario1.eleueleo.com"
+            ENVEOF
+
+            chmod 600 .env
+
+            # Cargar entorno completo de Docker Rootless
+            export PATH=$HOME/bin:$HOME/.local/bin:$PATH
+            export DOCKER_HOST=unix://$HOME/.docker/run/docker.sock
+            export XDG_RUNTIME_DIR=/run/user/$(id -u)
+
+            echo "UID: $(id -u)"
+            echo "DOCKER_HOST: $DOCKER_HOST"
+            echo "XDG_RUNTIME_DIR: $XDG_RUNTIME_DIR"
+            docker info | head -5
+
+            # Solo tocar el contenedor propio de este servicio (frontend).
+            # NO tocar bakery-db ni bakery-api: eso es responsabilidad del workflow de backend.
+            docker rm -f bakery-web 2>/dev/null || true
+            docker compose -f docker-compose.vps.yml up -d --build frontend
+            docker image prune -f
+
+            echo "Frontend desplegado en puerto 9000"

@@ -1,0 +1,31 @@
+node_modules/
+.env
+backend/.env
+dist/
+.vscode/
+*.log
+certs/
+.DS_Store
+Thumbs.db
+
+# Angular build cache
+.angular/
+**/.angular/
+
+# Runtime uploads (imágenes subidas por usuarios)
+backend/uploads/
+
+# TypeScript incremental build info
+*.tsbuildinfo
+
+# Archivos de build temporales
+/tmp
+/out-tsc
+
+# SSH keys
+bakery_key
+bakery_key.txt
+
+# CodeCanyon release artifacts
+*.zip
+_release/

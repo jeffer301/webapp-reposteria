@@ -1,0 +1,47 @@
+<div class="detail-overlay" (click)="close.emit()"></div>
+<div class="detail-modal">
+  @if (product(); as p) {
+    <button class="detail-close" (click)="close.emit()" aria-label="Cerrar"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+    <div class="row g-0">
+      <div class="col-md-6">
+        <img class="detail-img" [src]="p.imagen" [alt]="p.nombre" width="600" height="450">
+      </div>
+      <div class="col-md-6">
+        <div class="detail-body">
+          <p class="detail-category">{{ p.categoria }}</p>
+          <h2 class="detail-name">{{ p.nombre }}</h2>
+          <p class="detail-price">{{ fmtCOP(p.precio) }} <span>COP</span></p>
+          <p class="detail-desc">{{ p.descripcion }}</p>
+
+          @if (p.destacado) {
+            <span class="badge-dest mb-3 d-inline-block">⭐ Destacado</span>
+          }
+
+          @if (p.alergenos.length) {
+            <div class="detail-alergenos">
+              <strong>⚠️ Alérgenos:</strong> {{ p.alergenos.join(', ') }}
+            </div>
+          }
+
+          <div class="detail-stock">
+            @if (p.stock > 10) {
+              <span class="text-success">✅ Disponible</span>
+            } @else if (p.stock > 0) {
+              <span class="text-warning">⚠️ Solo {{ p.stock }} unidades</span>
+            } @else {
+              <span class="text-danger">❌ Agotado</span>
+            }
+          </div>
+
+          <button class="btn-add-detail" (click)="addToCart()" [disabled]="p.stock <= 0">
+            @if (p.stock <= 0) {
+              <i class="bi bi-slash-circle me-2" aria-hidden="true"></i>Agotado
+            } @else {
+              <i class="bi bi-cart-plus me-2" aria-hidden="true"></i>Agregar al carrito — {{ fmtCOP(p.precio) }}
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

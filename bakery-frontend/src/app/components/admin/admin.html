@@ -1,0 +1,332 @@
+<section style="background:var(--cream);padding:3rem 0;">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 style="font-family:'Playfair Display',serif;color:var(--chocolate);"><i class="bi bi-gear-fill me-2"></i>Panel de Administración</h4>
+      <button class="btn btn-sm btn-outline-secondary" (click)="close.emit()">✕ Cerrar</button>
+    </div>
+
+    <ul class="nav nav-tabs mb-4" role="tablist">
+      <li class="nav-item" role="presentation"><button type="button" class="nav-link" [class.active]="tab()==='orders'" (click)="setTab('orders')" role="tab" [attr.aria-selected]="tab()==='orders'"><i class="bi bi-receipt me-1" aria-hidden="true"></i>Pedidos</button></li>
+      <li class="nav-item" role="presentation"><button type="button" class="nav-link" [class.active]="tab()==='products'" (click)="setTab('products')" role="tab" [attr.aria-selected]="tab()==='products'"><i class="bi bi-box me-1" aria-hidden="true"></i>Productos</button></li>
+      <li class="nav-item" role="presentation"><button type="button" class="nav-link" [class.active]="tab()==='categories'" (click)="setTab('categories')" role="tab" [attr.aria-selected]="tab()==='categories'"><i class="bi bi-tags me-1" aria-hidden="true"></i>Categorías</button></li>
+      <li class="nav-item" role="presentation"><button type="button" class="nav-link" [class.active]="tab()==='users'" (click)="setTab('users')" role="tab" [attr.aria-selected]="tab()==='users'"><i class="bi bi-people me-1" aria-hidden="true"></i>Usuarios</button></li>
+    </ul>
+
+    <!-- ══════ PEDIDOS ══════ -->
+    @if (tab() === 'orders') {
+      <div class="d-flex gap-2 mb-3">
+        <button class="btn btn-sm btn-outline-primary" (click)="loadOrders()"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Refrescar</button>
+        <button class="btn btn-sm btn-outline-success" (click)="qrScanOpen = true"><i class="bi bi-qr-code-scan" aria-hidden="true"></i> Escanear QR</button>
+      </div>
+
+      @if (qrOrder) {
+        <div class="card mb-3 border-success">
+          <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-check-circle me-1"></i> Pedido: {{ qrOrder.codigo }}</span>
+            <button class="btn btn-sm btn-light" (click)="qrOrder = null">✕</button>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <p class="mb-1"><strong>Cliente:</strong> {{ qrOrder.cliente_nombre }}</p>
+                <p class="mb-1"><strong>Email:</strong> {{ qrOrder.cliente_email }}</p>
+                <p class="mb-1"><strong>Teléfono:</strong> {{ qrOrder.cliente_telefono }}</p>
+                <p class="mb-1"><strong>Total:</strong> {{ fmtCOP(qrOrder.total) }}</p>
+              </div>
+              <div class="col-md-6">
+                <p class="mb-1"><strong>Pago:</strong> {{ qrOrder.metodo_pago }} <span class="badge bg-{{ qrOrder.estado_pago === 'pagado' ? 'success' : 'warning' }}">{{ qrOrder.estado_pago }}</span></p>
+                <div class="mt-1">
+                  <select #spq class="form-select form-select-sm" style="width:auto;display:inline-block;font-size:.8rem;" (change)="updatePaymentStatus(qrOrder.id, spq.value);qrOrder.estado_pago = spq.value">
+                    <option value="">Cambiar pago</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="pagado">Pagado</option>
+                    <option value="reembolsado">Reembolsado</option>
+                  </select>
+                </div>
+                <p class="mb-1"><strong>Entrega:</strong> {{ qrOrder.tipo_entrega === 'domicilio' ? '🚚 Domicilio' : '🏪 Recoger' }}</p>
+                <p class="mb-1"><strong>Estado:</strong> <span class="badge bg-{{ estadoBadge(qrOrder.estado) }}">{{ qrOrder.estado }}</span></p>
+                <div class="mt-2">
+                  <select #qs class="form-select form-select-sm" style="width:auto;display:inline-block;" (change)="updateStatus(qrOrder.id, qs.value);qrOrder.estado = qs.value">
+                    <option value="">Cambiar estado</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="confirmado">Confirmado</option>
+                    <option value="preparando">Preparando</option>
+                    <option value="listo">Listo</option>
+                    <option value="entregado">Entregado</option>
+                    <option value="cancelado">Cancelado</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead><tr><th>Código</th><th>Cliente</th><th>Total</th><th>Pago</th><th>Estado</th><th>Acción</th></tr></thead>
+          <tbody>
+            @for (o of orders(); track o.id) {
+              <tr>
+                <td style="font-weight:600;font-size:.85rem;">{{ o.codigo }}</td>
+                <td>{{ o.cliente_nombre }}<br><small style="font-size:.75rem;color:var(--muted)">{{ o.cliente_email }}</small></td>
+                <td>{{ fmtCOP(o.total) }}</td>
+                <td><span class="badge bg-{{ o.estado_pago === 'pagado' ? 'success' : 'warning' }}">{{ o.estado_pago }}</span><br><small style="font-size:.7rem;">{{ o.metodo_pago }}</small>
+                  <select #sp class="form-select form-select-sm mt-1" style="width:auto;font-size:.75rem;" (change)="updatePaymentStatus(o.id, sp.value)">
+                    <option value="">Cambiar pago</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="pagado">Pagado</option>
+                    <option value="reembolsado">Reembolsado</option>
+                  </select>
+                </td>
+                <td><span class="badge bg-{{ estadoBadge(o.estado) }}">{{ o.estado }}</span></td>
+                <td>
+                  <select #s class="form-select form-select-sm" style="width:auto;display:inline-block;" (change)="updateStatus(o.id, s.value)">
+                    <option value="">Cambiar</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="confirmado">Confirmado</option>
+                    <option value="preparando">Preparando</option>
+                    <option value="listo">Listo</option>
+                    <option value="entregado">Entregado</option>
+                    <option value="cancelado">Cancelado</option>
+                  </select>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="6" class="text-center text-muted py-3">No hay pedidos</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <!-- ══════ PRODUCTOS ══════ -->
+    @if (tab() === 'products') {
+      <div class="d-flex gap-2 mb-3">
+        <button class="btn btn-sm btn-success" (click)="showNewProduct = !showNewProduct; editingProduct = null">
+          <i class="bi bi-plus-lg"></i> {{ showNewProduct ? 'Cancelar' : 'Nuevo producto' }}
+        </button>
+        <button class="btn btn-sm btn-outline-primary" (click)="loadProducts()" aria-label="Refrescar productos"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i></button>
+      </div>
+
+      @if (showNewProduct) {
+        <div class="card mb-4 border-success">
+          <div class="card-header bg-success text-white"><i class="bi bi-plus-circle me-1"></i> Nuevo producto</div>
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-4"><label class="form-label">Nombre *</label><input class="form-control form-control-sm" [(ngModel)]="newProduct.nombre"></div>
+              <div class="col-3"><label class="form-label">Precio *</label><input class="form-control form-control-sm" type="number" [(ngModel)]="newProduct.precio"></div>
+              <div class="col-2"><label class="form-label">Stock</label><input class="form-control form-control-sm" type="number" [(ngModel)]="newProduct.stock"></div>
+              <div class="col-3">
+                <label class="form-label">Categoría</label>
+                <select class="form-select form-select-sm" [(ngModel)]="newProduct.categoria_id">
+                  @for (c of categories(); track c.id) {
+                    <option [value]="c.id">{{ c.nombre }}</option>
+                  }
+                </select>
+              </div>
+              <div class="col-12"><label class="form-label">Descripción</label><textarea class="form-control form-control-sm" rows="2" [(ngModel)]="newProduct.descripcion"></textarea></div>
+              <div class="col-8"><label class="form-label">URL imagen (o sube archivo)</label><input class="form-control form-control-sm" [(ngModel)]="newProduct.imagen_url"></div>
+              <div class="col-4">
+                <label class="form-label">Subir imagen</label>
+                <input class="form-control form-control-sm" type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onNewProductImage($event)">
+              </div>
+              <div class="col-6"><label class="form-label">Alérgenos (coma separados)</label><input class="form-control form-control-sm" [(ngModel)]="newProduct.alergenos"></div>
+              <div class="col-3 d-flex align-items-end gap-3">
+                <label><input type="checkbox" [(ngModel)]="newProduct.es_destacado"> Destacado</label>
+                <label><input type="checkbox" [(ngModel)]="newProduct.disponible"> Disponible</label>
+              </div>
+            </div>
+            <div class="mt-3">
+              <button class="btn btn-sm btn-success" (click)="createProduct()" [disabled]="uploadingImage">
+                @if (uploadingImage) { <span class="spinner-border spinner-border-sm me-1"></span> } <i class="bi bi-check"></i> Crear
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead><tr><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Estado</th><th></th></tr></thead>
+          <tbody>
+            @for (p of products(); track p.id) {
+              <tr>
+                <td><span style="font-weight:500;">{{ p.nombre }}</span></td>
+                <td style="font-size:.85rem;">{{ p.categoria_nombre }}</td>
+                <td>{{ fmtCOP(p.precio) }}</td>
+                <td><span class="badge bg-{{ p.stock > 5 ? 'success' : p.stock > 0 ? 'warning' : 'danger' }}">{{ p.stock }}</span></td>
+                <td>@if (p.es_destacado) { <span class="badge bg-warning text-dark">★</span> } @if (!p.disponible) { <span class="badge bg-danger">No disp.</span> }</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary me-1" (click)="editProduct(p)" [attr.aria-label]="'Editar ' + p.nombre"><i class="bi bi-pencil" aria-hidden="true"></i></button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteProduct(p.id, p.nombre)" [attr.aria-label]="'Eliminar ' + p.nombre"><i class="bi bi-trash" aria-hidden="true"></i></button>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="6" class="text-center text-muted py-3">No hay productos</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (editingProduct) {
+        <div class="card mt-3 border-primary">
+          <div class="card-header bg-primary text-white"><i class="bi bi-pencil me-1"></i> Editar: {{ editingProduct.nombre }}</div>
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-4"><label class="form-label">Nombre</label><input class="form-control form-control-sm" [(ngModel)]="editForm.nombre"></div>
+              <div class="col-3"><label class="form-label">Precio</label><input class="form-control form-control-sm" type="number" [(ngModel)]="editForm.precio"></div>
+              <div class="col-2"><label class="form-label">Stock</label><input class="form-control form-control-sm" type="number" [(ngModel)]="editForm.stock"></div>
+              <div class="col-3">
+                <label class="form-label">Categoría</label>
+                <select class="form-select form-select-sm" [(ngModel)]="editForm.categoria_id">
+                  @for (c of categories(); track c.id) {
+                    <option [value]="c.id">{{ c.nombre }}</option>
+                  }
+                </select>
+              </div>
+              <div class="col-12"><label class="form-label">Descripción</label><textarea class="form-control form-control-sm" rows="2" [(ngModel)]="editForm.descripcion"></textarea></div>
+              <div class="col-4"><label class="form-label">URL imagen</label><input class="form-control form-control-sm" [(ngModel)]="editForm.imagen_url"></div>
+              <div class="col-4">
+                <label class="form-label">Subir imagen</label>
+                <input class="form-control form-control-sm" type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onEditProductImage($event)">
+              </div>
+              <div class="col-6"><label class="form-label">Alérgenos</label><input class="form-control form-control-sm" [(ngModel)]="editForm.alergenos"></div>
+              <div class="col-3 d-flex align-items-end gap-3">
+                <label><input type="checkbox" [(ngModel)]="editForm.disponible"> Disponible</label>
+                <label><input type="checkbox" [(ngModel)]="editForm.es_destacado"> ★</label>
+              </div>
+            </div>
+            <div class="mt-3">
+              <button class="btn btn-sm btn-primary me-2" (click)="saveProduct()" [disabled]="uploadingImage">
+                @if (uploadingImage) { <span class="spinner-border spinner-border-sm me-1"></span> } <i class="bi bi-check"></i> Guardar
+              </button>
+              <button class="btn btn-sm btn-secondary" (click)="cancelEdit()">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      }
+    }
+
+    <!-- ══════ CATEGORÍAS ══════ -->
+    @if (tab() === 'categories') {
+      <div class="d-flex gap-2 mb-3">
+        <button class="btn btn-sm btn-success" (click)="showNewCategory = !showNewCategory">
+          <i class="bi bi-plus-lg"></i> {{ showNewCategory ? 'Cancelar' : 'Nueva categoría' }}
+        </button>
+      </div>
+
+      @if (showNewCategory) {
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-6"><label class="form-label">Nombre</label><input class="form-control form-control-sm" [(ngModel)]="newCategory.nombre"></div>
+              <div class="col-6"><label class="form-label">Descripción</label><input class="form-control form-control-sm" [(ngModel)]="newCategory.descripcion"></div>
+            </div>
+            <div class="mt-2"><button class="btn btn-sm btn-success" (click)="createCategory()"><i class="bi bi-check"></i> Crear</button></div>
+          </div>
+        </div>
+      }
+
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr><th>Nombre</th><th>Descripción</th><th>Activo</th><th></th></tr></thead>
+          <tbody>
+            @for (c of categories(); track c.id) {
+              <tr>
+                <td>{{ c.nombre }}</td>
+                <td style="font-size:.85rem;color:var(--muted)">{{ c.descripcion }}</td>
+                <td>@if (c.activo) { <span class="badge bg-success">Sí</span> } @else { <span class="badge bg-danger">No</span> }</td>
+                <td><button class="btn btn-sm btn-outline-danger" (click)="deleteCategory(c.id, c.nombre)" [attr.aria-label]="'Eliminar categoría ' + c.nombre"><i class="bi bi-trash" aria-hidden="true"></i></button></td>
+              </tr>
+            } @empty {
+              <tr><td colspan="4" class="text-center text-muted py-3">No hay categorías</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <!-- ══════ USUARIOS ══════ -->
+    @if (tab() === 'users') {
+      <div class="d-flex gap-2 mb-3">
+        <button class="btn btn-sm btn-success" (click)="showNewAdmin = !showNewAdmin; adminFormError = ''">
+          <i class="bi bi-person-plus-fill me-1"></i>{{ showNewAdmin ? 'Cancelar' : 'Nuevo administrador' }}
+        </button>
+        <button class="btn btn-sm btn-outline-primary" (click)="loadUsers()" aria-label="Refrescar usuarios">
+          <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      @if (showNewAdmin) {
+        <div class="card mb-4 border-success">
+          <div class="card-header bg-success text-white">
+            <i class="bi bi-person-fill-gear me-1"></i> Crear nuevo administrador
+          </div>
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-sm-6">
+                <label class="form-label" for="na-nombre">Nombre *</label>
+                <input class="form-control form-control-sm" id="na-nombre" [(ngModel)]="newAdmin.nombre" placeholder="Nombre">
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label" for="na-apellido">Apellido *</label>
+                <input class="form-control form-control-sm" id="na-apellido" [(ngModel)]="newAdmin.apellido" placeholder="Apellido">
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label" for="na-email">Email *</label>
+                <input class="form-control form-control-sm" id="na-email" [(ngModel)]="newAdmin.email" type="email" placeholder="admin@ejemplo.com">
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label" for="na-telefono">Teléfono</label>
+                <input class="form-control form-control-sm" id="na-telefono" [(ngModel)]="newAdmin.telefono" type="tel" placeholder="Opcional">
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label" for="na-password">Contraseña *</label>
+                <input class="form-control form-control-sm" id="na-password" [(ngModel)]="newAdmin.password" type="password" placeholder="Mínimo 6 caracteres">
+              </div>
+            </div>
+            @if (adminFormError) {
+              <div class="alert alert-danger py-2 mt-2 mb-0" style="font-size:.85rem;">
+                <i class="bi bi-exclamation-circle me-1"></i>{{ adminFormError }}
+              </div>
+            }
+            <div class="mt-3">
+              <button class="btn btn-sm btn-success" (click)="createAdminUser()" [disabled]="creatingAdmin">
+                @if (creatingAdmin) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                <i class="bi bi-check me-1"></i>Crear administrador
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr><th>Nombre</th><th>Email</th><th>Teléfono</th><th>Rol</th><th>Fecha registro</th><th></th></tr></thead>
+          <tbody>
+            @for (u of users(); track u.id) {
+              <tr>
+                <td>{{ u.nombre }} {{ u.apellido }}</td>
+                <td style="font-size:.85rem;">{{ u.email }}</td>
+                <td style="font-size:.85rem;">{{ u.telefono || '-' }}</td>
+                <td><span class="badge bg-{{ u.rol === 'admin' ? 'primary' : 'secondary' }}">{{ u.rol }}</span></td>
+                <td style="font-size:.82rem;">{{ u.created_at?.substring(0, 10) }}</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-{{ u.rol === 'admin' ? 'warning' : 'primary' }}" (click)="toggleUserRol(u)">
+                    {{ u.rol === 'admin' ? 'Quitar admin' : 'Hacer admin' }}
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="6" class="text-center text-muted py-3">No hay usuarios</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    @if (qrScanOpen) {
+      <app-qr-scanner (close)="qrScanOpen = false" (orderFound)="onQrOrder($event)" />
+    }
+  </div>
+</section>
