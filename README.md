@@ -11,12 +11,13 @@
 3. [Arquitectura del Sistema](#3-arquitectura-del-sistema)
 4. [Funcionalidades](#4-funcionalidades)
 5. [Estructura del Proyecto](#5-estructura-del-proyecto)
-6. [Instalación y Ejecución Local](#6-instalación-y-ejecución-local)
-7. [Variables de Entorno](#7-variables-de-entorno)
-8. [Deploy en Servidor Universitario con Docker](#8-deploy-en-servidor-universitario-con-docker)
-9. [API Endpoints](#9-api-endpoints)
-10. [Capturas de Pantalla](#10-capturas-de-pantalla)
-11. [Equipo](#11-equipo)
+6. [URLs de Producción](#6-urls-de-producción)
+7. [Instalación y Ejecución Local](#7-instalación-y-ejecución-local)
+8. [Variables de Entorno](#8-variables-de-entorno)
+9. [Deploy en Servidor Universitario con Docker](#9-deploy-en-servidor-universitario-con-docker)
+10. [API Endpoints](#10-api-endpoints)
+11. [Capturas de Pantalla](#11-capturas-de-pantalla)
+12. [Equipo](#12-equipo)
 
 ---
 
@@ -250,7 +251,21 @@ bakery-app/
 
 ---
 
-## 6. Instalación y Ejecución Local
+## 6. URLs de Producción
+
+| Servicio | URL |
+|---|---|
+| **Frontend** | [https://bakery.seminario1.eleueleo.com](https://bakery.seminario1.eleueleo.com) |
+| **Backend API** | [https://bakery.seminario1.eleueleo.com/api](https://bakery.seminario1.eleueleo.com/api) |
+| **Health Check** | [https://bakery.seminario1.eleueleo.com/health](https://bakery.seminario1.eleueleo.com/health) |
+| **Panel Admin** | [https://bakery.seminario1.eleueleo.com/admin](https://bakery.seminario1.eleueleo.com/admin) |
+| **Verificar Pedido** | [https://bakery.seminario1.eleueleo.com/verify/:codigo](https://bakery.seminario1.eleueleo.com) |
+
+> **Nota:** El panel admin (`/admin`) está protegido con autenticación JWT y rol de administrador. Un usuario no autenticado será redirigido al inicio. Un usuario sin rol de admin verá una pantalla de "Acceso Denegado" (403).
+
+---
+
+## 7. Instalación y Ejecución Local
 
 ### Prerrequisitos
 
@@ -297,7 +312,7 @@ docker compose up --build
 
 ---
 
-## 7. Variables de Entorno
+## 8. Variables de Entorno
 
 Copiar `backend/.env.example` a `backend/.env` y completar los valores:
 
@@ -337,7 +352,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 ---
 
-## 8. Deploy en Servidor Universitario con Docker
+## 9. Deploy en Servidor Universitario con Docker
 
 > **Supuesto:** El servidor Linux ya tiene Docker y Docker Compose v2 instalados. Se accede por SSH. No se requiere dominio — se puede usar la IP del servidor.
 
@@ -415,11 +430,12 @@ curl http://IP_DEL_SERVIDOR/health
 
 ### Credenciales de demo
 
-| Rol | Email | Contraseña |
-|---|---|---|
-| Admin | `admin@bakery.com` | `Admin123` |
+| Rol | Email | Contraseña | Permisos |
+|---|---|---|---|
+| Administrador | `admin@bakery.com` | `Admin123` | Acceso total: gestión de pedidos, productos, categorías, usuarios y pagos |
+| Cliente (Estándar) | `cliente@bakery.com` | `Cliente123` | Solo compras: catálogo, carrito, pedidos propios. Sin acceso al panel admin |
 
-> **Cambiar inmediatamente** la contraseña del admin en producción desde el panel administrativo.
+> **IMPORTANTE:** En producción, cambiar inmediatamente las contraseñas de ambos usuarios desde el panel administrativo.
 
 ### Comandos útiles de mantenimiento
 
@@ -443,9 +459,9 @@ docker compose up -d --build
 
 ---
 
-## 9. API Endpoints
+## 10. API Endpoints
 
-**Base URL:** `http://localhost:3000`
+**Base URL:** `http://localhost:3000` (desarrollo) | `https://bakery.seminario1.eleueleo.com/api` (producción)
 
 ### Salud
 | Método | Ruta | Auth | Descripción |
@@ -482,6 +498,7 @@ docker compose up -d --build
 | GET | `/api/pedidos/verificar/:codigo` | No | Verificar pedido por código |
 | GET | `/api/pedidos` | Admin | Listar todos los pedidos |
 | PATCH | `/api/pedidos/:id/estado` | Admin | Cambiar estado del pedido |
+| PATCH | `/api/pedidos/:id/estado-pago` | Admin | Cambiar estado de pago (pendiente/pagado/reembolsado) |
 
 ### Pagos y Archivos
 | Método | Ruta | Auth | Descripción |
@@ -491,7 +508,7 @@ docker compose up -d --build
 
 ---
 
-## 10. Capturas de Pantalla
+## 11. Capturas de Pantalla
 
 > A continuación se sugieren las capturas que mejor ilustran el proyecto para la presentación:
 
@@ -510,7 +527,7 @@ docker compose up -d --build
 
 ---
 
-## 11. Equipo
+## 12. Equipo
 
 | Nombre | Rol | 
 |---|---|

@@ -179,4 +179,9 @@ INSERT INTO usuarios (nombre, apellido, email, password_hash, rol) VALUES
   ('Admin', 'Repostería', 'admin@bakery.com', '$2a$10$rdkPt5JlBcBjCkeZhSlZqOjtq2B4eFFvMc2V0jEkUO1SkN47fQ7A2', 'admin')
 ON CONFLICT DO NOTHING;
 
+-- Usuario estándar de prueba (password: Cliente123)
+INSERT INTO usuarios (nombre, apellido, email, password_hash, rol) VALUES
+  ('Cliente', 'Prueba', 'cliente@bakery.com', '$2a$10$lA0sMCMOPuy7Y1mXYaGy.O7ZOf6QZeBoVRmSxQSOLVmJzI.0wc4xG', 'cliente')
+ON CONFLICT DO NOTHING;
+
 SELECT 'Base de datos inicializada correctamente ✅' AS mensaje;

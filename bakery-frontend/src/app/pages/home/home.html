@@ -1,0 +1,45 @@
+<app-navbar (toggleCart)="toggleCart()" (toggleAuth)="openAuth()" />
+
+@if (savedOrderCode(); as code) {
+  <div class="recovery-banner">
+    <span class="recovery-text" (click)="openSavedTicket()">
+      @if (loadingSavedOrder()) {
+        <span class="spinner-border spinner-border-sm me-1"></span>Cargando pedido...
+      } @else {
+        <i class="bi bi-receipt me-1"></i>¿Cerraste la ventana sin querer? <strong>Ver mi último pedido</strong>
+      }
+    </span>
+    <button class="recovery-close" (click)="dismissBanner()" aria-label="Cerrar aviso">&times;</button>
+  </div>
+}
+
+<main id="main-content">
+  <app-hero />
+  <app-product-grid (selectProduct)="selectProduct($event)" />
+</main>
+
+@if (selectedProduct) {
+  <app-product-detail [product]="selectedProduct" (close)="closeDetail()" />
+}
+
+@if (cartOpen) {
+  <app-cart-sidebar (close)="toggleCart()" (checkout)="openCheckout()" />
+}
+
+@if (modal === 'checkout') {
+  <app-checkout-modal (close)="closeModal()" (done)="onDone($event)" />
+}
+
+@if (modal === 'ticket' && order) {
+  <app-ticket-modal [order]="order" (close)="closeModal()" />
+}
+
+@if (authOpen) {
+  <app-auth-modal (close)="closeAuth()" />
+}
+
+<app-verifier />
+
+<app-footer />
+
+<app-toast />
