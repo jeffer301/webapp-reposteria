@@ -604,3 +604,21 @@ docker compose up -d --build
 | **Graceful Shutdown** | SIGTERM/SIGINT cierran el pool de BD correctamente |
 | **DB isolation** | PostgreSQL solo accesible desde la red interna de Docker |
 | **Nginx** | TLSv1.2/1.3, HSTS, gzip, headers de seguridad |
+
+## 13. Gestión del Proyecto - Trello
+
+La planificación y seguimiento del desarrollo fue realizada mediante Trello utilizando metodología Scrum.
+
+El tablero contiene:
+
+- Bitácora de Sprints.
+- Registro de reuniones semanales.
+- Organización de tareas.
+- Seguimiento del avance del proyecto.
+
+Tablero:
+https://trello.com/b/6qoihYs0/seminario-i
+
+
+
+
