@@ -394,7 +394,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 El despliegue es **automático** via GitHub Actions. Al hacer push a la rama `main`, se ejecutan dos workflows en paralelo:
 
 1. **deploy-frontend.yml** — Copia `bakery-frontend/` al VPS, reconstruye `bakery-web` y recarga Nginx.
-2. **deploy-backend.yml** — Copia `backend/` al VPS, reconstruye `bakery-api` y reinicia PostgreSQL + backend.
+2. **deploy-backend.yml** — Copia `backend/` al VPS, reconstruye `bakery-api`, reinicia PostgreSQL + backend, y **ejecuta las migraciones SQL** (`schema.sql` + archivos `migrate-*.sql`).
 
 ### Estructura en el VPS
 
@@ -444,6 +444,35 @@ curl http://localhost:9001/health
 | `SSH_KEY` | Llave privada SSH |
 | `DB_PASSWORD` | Contraseña de PostgreSQL |
 | `JWT_SECRET` | Clave para firmar tokens JWT |
+
+### Migraciones de Base de Datos
+
+Las migraciones se ejecutan **automáticamente** en el pipeline de deploy (`deploy-backend.yml`). El runner (`backend/src/migrations/run.js`) ejecuta en orden:
+
+1. `schema.sql` — Schema base (tablas, índices, triggers, datos iniciales). Usa `CREATE TABLE IF NOT EXISTS` e `INSERT ... ON CONFLICT DO NOTHING` para ser idempotente.
+2. `migrate-*.sql` — Migraciones incrementales numeradas (e.g., `migrate-002.sql`).
+
+**Para crear una nueva migración:**
+
+```bash
+# Crear archivo de migración
+touch backend/src/migrations/migrate-003.sql
+
+# Escribir la migración usando IF NOT EXISTS para seguridad
+cat > backend/src/migrations/migrate-003.sql << 'EOF'
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'pedidos' AND column_name = 'nueva_columna'
+  ) THEN
+    ALTER TABLE pedidos ADD COLUMN nueva_columna VARCHAR(100);
+  END IF;
+END $$;
+EOF
+```
+
+Al hacer push a `main`, el workflow ejecutará la migración automáticamente.
 
 ### Credenciales de demo
 

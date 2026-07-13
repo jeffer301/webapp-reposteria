@@ -68,4 +68,20 @@ jobs:
             docker compose -f docker-compose.vps.yml up -d --build backend postgres
             docker image prune -f
 
+            # Esperar a que PostgreSQL esté listo
+            echo "Esperando a que PostgreSQL esté healthy..."
+            for i in $(seq 1 30); do
+              if docker compose -f docker-compose.vps.yml exec -T postgres pg_isready -U postgres > /dev/null 2>&1; then
+                echo "PostgreSQL listo"
+                break
+              fi
+              sleep 2
+            done
+
+            # Ejecutar migraciones (schema.sql + migrate-*.sql)
+            echo "Ejecutando migraciones..."
+            docker compose -f docker-compose.vps.yml exec -T backend node src/migrations/run.js || {
+              echo "⚠️  Error en migraciones, pero continuando..."
+            }
+
             echo "Backend desplegado en puerto 9001"
