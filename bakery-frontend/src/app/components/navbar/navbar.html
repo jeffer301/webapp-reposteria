@@ -16,10 +16,10 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/" fragment="tienda">Tienda</a>
+          <a class="nav-link" href="/" (click)="scrollTo('tienda'); $event.preventDefault()">Tienda</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/" fragment="verificar">Verificar</a>
+          <a class="nav-link" href="/" (click)="scrollTo('verificar'); $event.preventDefault()">Verificar</a>
         </li>
         @if (auth.isAdmin()) {
           <li class="nav-item">
