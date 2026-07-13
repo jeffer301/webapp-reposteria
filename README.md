@@ -52,7 +52,7 @@ Las reposterías artesanales pequeñas dependen casi exclusivamente de ventas pr
 
 | Tecnología | Versión | Justificación |
 |---|---|---|
-| **Angular** | 21 | Framework SPA empresarial con Standalone Components y Signals para estado reactivo sin librerías externas. Tipado estático desde la base con TypeScript. |
+| **Angular** | 21 | Framework SPA empresarial con Standalone Components, Signals y Router para navegación con lazy loading y route guards. |
 | **TypeScript** | 5.9 | Tipado estático que reduce errores en tiempo de desarrollo y mejora la mantenibilidad. Angular lo requiere nativamente. |
 | **Bootstrap** | 5.3 | Sistema de diseño responsivo maduro. Permite construir interfaces consistentes sin escribir CSS desde cero, con soporte cross-browser garantizado. |
 | **SCSS** | — | Superset de CSS con variables, anidamiento y mixins. Permite mantener estilos organizados en componentes. |
@@ -151,9 +151,10 @@ sequenceDiagram
 - **Carrito persistente**: se guarda en `localStorage`; no requiere cuenta.
 - **Checkout completo**: datos de contacto, tipo de entrega (recoger / domicilio), dirección, método de pago, notas.
 - **Ticket de pedido**: modal imprimible con resumen + código QR único por pedido.
-- **Verificación pública**: URL `/verify/:codigo` muestra el estado del pedido sin requerir login.
+- **Verificación pública**: sección en la página principal donde cualquier usuario puede verificar el estado de un pedido ingresando su código, sin requerir login.
 - **Historial de pedidos**: para usuarios autenticados, vista de todos sus pedidos con estados.
 - **Notificaciones por email**: confirmación al crear pedido y al cambiar de estado.
+- **Angular Router**: navegación con lazy loading, route guards (authGuard, adminGuard), y pantalla de acceso denegado (403).
 - **PWA**: instalable como app en dispositivos móviles y desktop.
 
 ### Para administradores
@@ -225,14 +226,19 @@ bakery-app/
     ├── angular.json            # Configuración del proyecto Angular
     ├── proxy.conf.json         # Proxy de desarrollo (→ localhost:3000)
     └── src/app/
-        ├── app.ts / .html / .scss / .config.ts / .routes.ts
+        ├── app.ts / .html / .config.ts / .routes.ts
         ├── models.ts           # Interfaces: Product, CartItem, Order, User
         ├── styles-vars.scss    # Variables SCSS globales (colores, tipografías)
+        ├── guards/
+        │   └── auth.guard.ts   # authGuard + adminGuard para rutas protegidas
         ├── services/
         │   ├── api.ts          # HTTP wrapper con interceptor JWT
         │   ├── auth.ts         # Estado de autenticación (Signals)
         │   ├── cart.ts         # Carrito (Signals + localStorage)
         │   └── product.ts      # Productos (Signals + paginación)
+        ├── pages/
+        │   ├── home/           # Página principal (hero + catálogo + verificador)
+        │   └── admin-page/     # Wrapper del admin con navbar y router
         └── components/
             ├── navbar/         # Navbar sticky con carrito y menú de usuario
             ├── hero/           # Hero section con llamado a la acción
@@ -245,6 +251,7 @@ bakery-app/
             ├── admin/          # Panel admin (4 pestañas)
             ├── qr-scanner/     # Escáner QR en tiempo real con cámara
             ├── verifier/       # Verificador público de pedidos por código
+            ├── access-denied/  # Página 403 "Acceso Denegado"
             ├── toast/          # Notificaciones tipo toast
             └── footer/         # Footer con información de contacto
 ```
@@ -253,13 +260,21 @@ bakery-app/
 
 ## 6. URLs de Producción
 
-| Servicio | URL |
-|---|---|
-| **Frontend** | [https://bakery.seminario1.eleueleo.com](https://bakery.seminario1.eleueleo.com) |
-| **Backend API** | [https://bakery.seminario1.eleueleo.com/api](https://bakery.seminario1.eleueleo.com/api) |
-| **Health Check** | [https://bakery.seminario1.eleueleo.com/health](https://bakery.seminario1.eleueleo.com/health) |
-| **Panel Admin** | [https://bakery.seminario1.eleueleo.com/admin](https://bakery.seminario1.eleueleo.com/admin) |
-| **Verificar Pedido** | [https://bakery.seminario1.eleueleo.com/verify/:codigo](https://bakery.seminario1.eleueleo.com) |
+| Servicio | URL | Descripción |
+|---|---|---|
+| **Frontend (Inicio)** | [https://bakery.seminario1.eleueleo.com](https://bakery.seminario1.eleueleo.com) | Página principal: catálogo, carrito, verificador de pedidos |
+| **Panel Admin** | [https://bakery.seminario1.eleueleo.com/admin](https://bakery.seminario1.eleueleo.com/admin) | Panel administrativo (requiere rol admin) |
+| **Acceso Denegado** | [https://bakery.seminario1.eleueleo.com/403](https://bakery.seminario1.eleueleo.com/403) | Página de error 403 para usuarios sin permisos |
+| **Backend API** | [https://bakery.seminario1.eleueleo.com/api](https://bakery.seminario1.eleueleo.com/api) | API REST (Express + PostgreSQL) |
+| **Health Check** | [https://bakery.seminario1.eleueleo.com/health](https://bakery.seminario1.eleueleo.com/health) | Estado del backend |
+
+### Rutas del Frontend (Angular Router)
+
+| Ruta | Protegida | Descripción |
+|---|---|---|
+| `/` | No | Página principal con hero, catálogo, verificador y footer |
+| `/admin` | Sí (adminGuard) | Panel de administración con gestión de pedidos, productos, categorías y usuarios |
+| `/403` | No | Pantalla de "Acceso Denegado" |
 
 > **Nota:** El panel admin (`/admin`) está protegido con autenticación JWT y rol de administrador. Un usuario no autenticado será redirigido al inicio. Un usuario sin rol de admin verá una pantalla de "Acceso Denegado" (403).
 
