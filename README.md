@@ -414,7 +414,8 @@ Nginx (host) maneja TLS y redirige:
 ### Despliegue manual (si es necesario)
 
 ```bash
-ssh -i ~/.ssh/bakery_rsa bakery@187.77.27.122
+# Conectarse al VPS (credenciales privadas del equipo)
+ssh <usuario>@<IP_DEL_VPS>
 cd /var/www/seminario1/bakery
 
 # Ver estado
@@ -438,8 +439,8 @@ curl http://localhost:9001/health
 
 | Secret | Uso |
 |---|---|
-| `SSH_HOST` | IP del VPS (`187.77.27.122`) |
-| `SSH_USER` | Usuario SSH (`bakery`) |
+| `SSH_HOST` | IP del VPS |
+| `SSH_USER` | Usuario SSH |
 | `SSH_KEY` | Llave privada SSH |
 | `DB_PASSWORD` | Contraseña de PostgreSQL |
 | `JWT_SECRET` | Clave para firmar tokens JWT |
