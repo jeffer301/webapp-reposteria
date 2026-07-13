@@ -79,13 +79,16 @@ Las reposterías artesanales pequeñas dependen casi exclusivamente de ventas pr
 | Tecnología | Justificación |
 |---|---|
 | **Docker** | Garantiza que el entorno de desarrollo y producción sean idénticos. Elimina el problema de "funciona en mi máquina". |
-| **Docker Compose** | Orquesta los 3 servicios (PostgreSQL, Backend, Frontend/Nginx) con un solo comando, definiendo dependencias y healthchecks. |
-| **Nginx (Alpine)** | Servidor web de alto rendimiento para servir los archivos estáticos del build de Angular, actuar como proxy inverso hacia la API y terminar SSL. |
-| **PostgreSQL Alpine** | Imagen Docker oficial con mínimo footprint de seguridad (sin herramientas innecesarias). |
+| **Docker Compose** | Orquesta los 3 contenedores (PostgreSQL, Backend, Frontend) con healthchecks y volúmenes persistentes. |
+| **Nginx (host)** | Proxy inverso a nivel de servidor: termina TLS, sirve archivos estáticos del frontend y redirige `/api/` al backend. |
+| **Nginx (Alpine)** | Contenedor del frontend: sirve el build estático de Angular 21. |
+| **PostgreSQL Alpine** | Imagen Docker oficial con mínimo footprint. Datos en volumen `pgdata` persistente. |
 
 ---
 
 ## 3. Arquitectura del Sistema
+
+### Despliegue en VPS
 
 ```mermaid
 graph TB
@@ -93,28 +96,45 @@ graph TB
         Browser[Navegador Web]
     end
 
-    subgraph Docker["Docker Compose — Servidor"]
-        direction TB
-        Nginx["🌐 Nginx :80/:443<br/>Proxy inverso + SSL<br/>Sirve archivos estáticos"]
-        Angular["⚡ Angular 21 SPA<br/>Build estático en Nginx"]
-        Express["🟢 Node.js + Express<br/>API REST :3000<br/>JWT · Rate Limit · Helmet"]
-        PG[("🐘 PostgreSQL 16<br/>:5432 (solo localhost)<br/>6 tablas + índices")]
-        Uploads["📁 Volumen uploads<br/>Imágenes de productos"]
+    subgraph VPS["VPS — bakery.seminario1.eleueleo.com"]
+        NginxHost["🌐 Nginx (host)<br/>/etc/nginx/sites-available/bakery<br/>TLS 1.2/1.3 · HSTS · gzip"]
+
+        subgraph Docker["Docker Compose"]
+            direction TB
+            Frontend["⚡ bakery-web<br/>nginx:alpine — Puerto 9000<br/>Build estático Angular 21"]
+            Backend["🟢 bakery-api<br/>node:20-alpine — Puerto 9001<br/>Express · JWT · Rate Limit · Helmet"]
+            DB[("🐘 bakery-db<br/>postgres:16 — Puerto 5432<br/>Solo red interna Docker")]
+        end
+
+        Volumes[("📁 Volúmenes persistentes<br/>pgdata · uploads")]
     end
 
     subgraph Externos["Servicios Externos"]
         Wompi["💳 Wompi<br/>Pasarela de pagos"]
         SMTP["📧 SMTP<br/>Correo transaccional"]
+        GitHub["🔀 GitHub Actions<br/>Deploy automático al push a main"]
     end
 
-    Browser -->|"HTTPS :443"| Nginx
-    Nginx -->|"Archivos estáticos"| Angular
-    Nginx -->|"Proxy /api/*"| Express
-    Express -->|"SQL / Pool"| PG
-    Express -->|"Multer"| Uploads
-    Express -->|"Webhook POST"| Wompi
-    Express -->|"Nodemailer"| SMTP
+    Browser -->|"HTTPS :443"| NginxHost
+    NginxHost -->|"location / → :9000"| Frontend
+    NginxHost -->|"location /api/ → :9001"| Backend
+    Frontend -->|"Archivos estáticos"| Frontend
+    Backend -->|"SQL / Pool"| DB
+    Backend -->|"Multer"| Volumes
+    Backend -->|"Webhook POST"| Wompi
+    Backend -->|"Nodemailer"| SMTP
+    GitHub -->|"SSH + docker compose"| NginxHost
+    DB -->|"Data persistente"| Volumes
 ```
+
+### Puertos
+
+| Servicio | Puerto (host) | Puerto (contenedor) | Exposición |
+|---|---|---|---|
+| Nginx (host) | 80 / 443 | — | Público (HTTPS) |
+| bakery-web | 9000 | 80 | Solo localhost → Nginx |
+| bakery-api | 9001 | 3000 | Solo localhost → Nginx |
+| bakery-db | 5433 (debug) | 5432 | Solo localhost (red Docker interna) |
 
 ### Flujo de un pedido
 
@@ -367,81 +387,62 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 ---
 
-## 9. Deploy en Servidor Universitario con Docker
+## 9. Deploy en VPS con Docker
 
-> **Supuesto:** El servidor Linux ya tiene Docker y Docker Compose v2 instalados. Se accede por SSH. No se requiere dominio — se puede usar la IP del servidor.
+### Arquitectura de despliegue
 
-### Paso 1 — Clonar el repositorio
+El despliegue es **automático** via GitHub Actions. Al hacer push a la rama `main`, se ejecutan dos workflows en paralelo:
+
+1. **deploy-frontend.yml** — Copia `bakery-frontend/` al VPS, reconstruye `bakery-web` y recarga Nginx.
+2. **deploy-backend.yml** — Copia `backend/` al VPS, reconstruye `bakery-api` y reinicia PostgreSQL + backend.
+
+### Estructura en el VPS
+
+```
+/var/www/seminario1/bakery/
+├── docker-compose.vps.yml     # Orquesta los 3 contenedores
+├── .env                       # Variables de entorno (generado por el workflow)
+├── backend/                   # Código del API (copiado por GitHub Actions)
+├── bakery-frontend/           # Build de Angular (copiado por GitHub Actions)
+└── uploads/                   # Volumen: imágenes de productos
+```
+
+Nginx (host) maneja TLS y redirige:
+- `location /` → `127.0.0.1:9000` (bakery-web)
+- `location /api/` → `127.0.0.1:9001` (bakery-api)
+
+### Despliegue manual (si es necesario)
 
 ```bash
-ssh usuario@IP_DEL_SERVIDOR
-git clone https://github.com/TU_USUARIO/TU_REPO.git
-cd TU_REPO
+ssh -i ~/.ssh/bakery_rsa bakery@187.77.27.122
+cd /var/www/seminario1/bakery
+
+# Ver estado
+docker compose -f docker-compose.vps.yml ps
+
+# Ver logs
+docker compose -f docker-compose.vps.yml logs -f backend
+docker compose -f docker-compose.vps.yml logs -f postgres
+
+# Reiniciar un servicio
+docker compose -f docker-compose.vps.yml restart backend
+
+# Rebuild completo
+docker compose -f docker-compose.vps.yml up -d --build backend postgres
+
+# Health check
+curl http://localhost:9001/health
 ```
 
-### Paso 2 — Crear el archivo de variables de entorno
+### Secrets de GitHub Actions
 
-```bash
-cp backend/.env.example backend/.env
-nano backend/.env
-```
-
-Valores mínimos a configurar:
-
-```env
-DB_PASSWORD=UnaContraseñaSegura2024
-JWT_SECRET=genera_con_node_crypto_como_se_indica_arriba
-DB_HOST=localhost
-PORT=3000
-NODE_ENV=production
-FRONTEND_URL=http://IP_DEL_SERVIDOR
-API_URL=http://localhost:3000
-```
-
-### Paso 3 — Certificados SSL
-
-**Opción A — Sin SSL (HTTP simple, para pruebas internas)**
-
-Editar `bakery-frontend/nginx.conf` y comentar el bloque `server` de HTTPS, dejando solo el de HTTP en el puerto 80. Luego en `docker-compose.yml` quitar el mapeo del puerto `443:443`.
-
-**Opción B — SSL autofirmado (HTTPS con advertencia del navegador)**
-
-```bash
-mkdir certs
-docker run --rm -v "$(pwd)/certs:/certs" alpine sh -c \
-  'apk add openssl && openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-   -keyout /certs/privkey.pem -out /certs/fullchain.pem \
-   -subj "/CN=IP_DEL_SERVIDOR"'
-```
-
-### Paso 4 — Construir e iniciar los servicios
-
-```bash
-docker compose up -d --build
-```
-
-Este comando:
-1. Construye las imágenes de backend y frontend.
-2. Descarga la imagen de PostgreSQL 16.
-3. Ejecuta las migraciones SQL automáticamente al iniciar.
-4. Inserta datos de demo (5 categorías, 8 productos, usuario admin).
-5. Levanta los 3 contenedores en orden correcto (salud verificada).
-
-### Paso 5 — Verificar el despliegue
-
-```bash
-# Estado de los contenedores
-docker compose ps
-
-# Logs del backend
-docker compose logs backend
-
-# Health check de la API
-curl http://localhost:3000/health
-
-# Health check desde fuera (si HTTP)
-curl http://IP_DEL_SERVIDOR/health
-```
+| Secret | Uso |
+|---|---|
+| `SSH_HOST` | IP del VPS (`187.77.27.122`) |
+| `SSH_USER` | Usuario SSH (`bakery`) |
+| `SSH_KEY` | Llave privada SSH |
+| `DB_PASSWORD` | Contraseña de PostgreSQL |
+| `JWT_SECRET` | Clave para firmar tokens JWT |
 
 ### Credenciales de demo
 
