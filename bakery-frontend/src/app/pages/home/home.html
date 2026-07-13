@@ -15,7 +15,7 @@
 
 <main id="main-content">
   <app-hero />
-  <app-product-grid (selectProduct)="selectProduct($event)" />
+  <div id="tienda"><app-product-grid (selectProduct)="selectProduct($event)" /></div>
 </main>
 
 @if (selectedProduct) {
@@ -38,7 +38,7 @@
   <app-auth-modal (close)="closeAuth()" />
 }
 
-<app-verifier />
+<div id="verificar"><app-verifier /></div>
 
 <app-footer />
 
