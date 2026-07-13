@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { RouterLink, Router } from '@angular/router';
 import { Admin } from '../../components/admin/admin';
 
 @Component({
@@ -13,7 +13,10 @@ import { Admin } from '../../components/admin/admin';
         </a>
       </div>
     </nav>
-    <app-admin />
+    <app-admin (close)="goHome()" />
   `,
 })
-export class AdminPage {}
+export class AdminPage {
+  private router = inject(Router);
+  goHome() { this.router.navigate(['/']); }
+}
