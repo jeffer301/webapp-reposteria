@@ -36,3 +36,47 @@ section { padding: 5rem 0; }
 .pagination .page-link { border-color: $rose-light; color: $rose-dark; }
 .pagination .page-link:hover { background: $rose-light; border-color: $rose; }
 .pagination .active .page-link { background: $rose; border-color: $rose; color: #fff; }
+
+/* Recovery banner */
+.recovery-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-sticky);
+  background: $chocolate;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: .6rem 1.5rem;
+  font-size: .88rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,.15);
+  animation: slideDown .3s ease;
+}
+
+.recovery-text {
+  cursor: pointer;
+  transition: opacity .2s;
+  &:hover { opacity: .85; }
+  strong { text-decoration: underline; }
+}
+
+.recovery-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  cursor: pointer;
+  opacity: .7;
+  transition: opacity .2s;
+  line-height: 1;
+  padding: 0 .2rem;
+  &:hover { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}

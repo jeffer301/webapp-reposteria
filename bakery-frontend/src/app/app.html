@@ -2,6 +2,19 @@
 
 <app-navbar (toggleCart)="toggleCart()" (toggleAuth)="openAuth()" (toggleAdmin)="toggleAdmin()" />
 
+@if (savedOrderCode(); as code) {
+  <div class="recovery-banner">
+    <span class="recovery-text" (click)="openSavedTicket()">
+      @if (loadingSavedOrder()) {
+        <span class="spinner-border spinner-border-sm me-1"></span>Cargando pedido...
+      } @else {
+        <i class="bi bi-receipt me-1"></i>¿Cerraste la ventana sin querer? <strong>Ver mi último pedido</strong>
+      }
+    </span>
+    <button class="recovery-close" (click)="dismissBanner()" aria-label="Cerrar aviso">&times;</button>
+  </div>
+}
+
 <main id="main-content">
   <app-hero />
   <app-product-grid (selectProduct)="selectProduct($event)" />

@@ -1,6 +1,7 @@
-import { Component, viewChild, inject, OnInit } from '@angular/core';
+import { Component, viewChild, inject, OnInit, signal } from '@angular/core';
 import { ProductService } from './services/product';
 import { AuthService } from './services/auth';
+import { ApiService } from './services/api';
 import { Product } from './models';
 import { Navbar } from './components/navbar/navbar';
 import { Hero } from './components/hero/hero';
@@ -14,6 +15,8 @@ import { AuthModal } from './components/auth-modal/auth-modal';
 import { Admin } from './components/admin/admin';
 import { FooterComponent } from './components/footer/footer';
 import { ToastComponent } from './components/toast/toast';
+
+const STORAGE_KEY = 'bakery_last_order';
 
 @Component({
   selector: 'app-root',
@@ -34,10 +37,45 @@ export class App implements OnInit {
   adminOpen = false;
   readonly toast = viewChild(ToastComponent);
   private productService = inject(ProductService);
+  private api = inject(ApiService);
   auth = inject(AuthService);
+
+  savedOrderCode = signal<string | null>(null);
+  savedOrder = signal<any>(null);
+  loadingSavedOrder = signal(false);
 
   ngOnInit(): void {
     this.productService.loadAll(1);
+    this.checkSavedOrder();
+  }
+
+  private checkSavedOrder(): void {
+    const code = localStorage.getItem(STORAGE_KEY);
+    if (code) {
+      this.savedOrderCode.set(code);
+    }
+  }
+
+  async openSavedTicket(): Promise<void> {
+    const code = this.savedOrderCode();
+    if (!code) return;
+    this.loadingSavedOrder.set(true);
+    try {
+      const order: any = await this.api.get(`/pedidos/verificar/${code}`);
+      this.savedOrder.set(order);
+      this.order = order;
+      this.modal = 'ticket';
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+      this.savedOrderCode.set(null);
+    } finally {
+      this.loadingSavedOrder.set(false);
+    }
+  }
+
+  dismissBanner(): void {
+    localStorage.removeItem(STORAGE_KEY);
+    this.savedOrderCode.set(null);
   }
 
   toggleCart(): void {
@@ -50,6 +88,10 @@ export class App implements OnInit {
   }
 
   closeModal(): void {
+    if (this.modal === 'ticket' && this.savedOrderCode()) {
+      localStorage.removeItem(STORAGE_KEY);
+      this.savedOrderCode.set(null);
+    }
     this.modal = null;
     this.order = null;
   }
@@ -81,6 +123,8 @@ export class App implements OnInit {
   onDone(order: any): void {
     this.order = order;
     this.modal = 'ticket';
+    localStorage.setItem(STORAGE_KEY, order.codigo);
+    this.savedOrderCode.set(order.codigo);
     const pagoMsg = order.pago?.url_pago
       ? `. <a href="${order.pago.url_pago}" target="_blank" style="color:#fff;text-decoration:underline">Ir a pagar</a>`
       : '';
