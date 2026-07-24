@@ -52,5 +52,6 @@ export interface User {
   apellido: string;
   email: string;
   telefono?: string;
+  direccion?: string;
   rol: string;
 }

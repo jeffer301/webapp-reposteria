@@ -34,6 +34,7 @@ export class CheckoutModal {
 
   error = signal('');
   submitting = signal(false);
+  direccionSelection = signal<'saved' | 'new'>('saved');
 
   constructor() {
     this.form.fecha = this.mananaApertura();
@@ -43,6 +44,34 @@ export class CheckoutModal {
       this.form.apellido = user.apellido;
       this.form.email = user.email;
       if (user.telefono) this.form.telefono = user.telefono;
+      if (user.direccion) {
+        this.form.direccion = user.direccion;
+        this.direccionSelection.set('saved');
+      }
+    }
+  }
+
+  get hasSavedDireccion(): boolean {
+    return !!this.auth.user()?.direccion;
+  }
+
+  get savedDireccion(): string {
+    return this.auth.user()?.direccion || '';
+  }
+
+  onDireccionChange(): void {
+    if (this.direccionSelection() === 'saved') {
+      this.form.direccion = this.savedDireccion;
+    } else {
+      this.form.direccion = '';
+    }
+  }
+
+  onTipoChange(): void {
+    if (this.form.tipo === 'recoger') {
+      this.form.direccion = '';
+    } else if (this.direccionSelection() === 'saved' && this.savedDireccion) {
+      this.form.direccion = this.savedDireccion;
     }
   }
 
@@ -80,11 +109,6 @@ export class CheckoutModal {
     return null;
   }
 
-  toggleDireccion(): void {
-    const el = document.getElementById('direccionRow');
-    if (el) el.classList.toggle('d-none', this.form.tipo !== 'domicilio');
-  }
-
   togglePago(): void {
     const tarjetaEl = document.getElementById('pagoTarjeta');
     const transferenciaEl = document.getElementById('pagoTransferencia');
@@ -103,6 +127,10 @@ export class CheckoutModal {
     this.error.set('');
     if (!this.form.nombre || !this.form.apellido || !this.form.email) {
       this.error.set('Completa nombre, apellido y email');
+      return;
+    }
+    if (this.form.tipo === 'domicilio' && !this.form.direccion) {
+      this.error.set('Ingresa la dirección de entrega');
       return;
     }
     const errFecha = this.validarFecha();

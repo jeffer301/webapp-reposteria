@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   telefono VARCHAR(20),
+  direccion TEXT,
   rol VARCHAR(20) DEFAULT 'cliente' CHECK (rol IN ('cliente', 'admin')),
   activo BOOLEAN DEFAULT true,
   created_at TIMESTAMP DEFAULT NOW(),
@@ -175,13 +176,13 @@ ON CONFLICT DO NOTHING;
 
 -- Admin por defecto (password: Admin123)
 -- En producción, cambiar inmediatamente
-INSERT INTO usuarios (nombre, apellido, email, password_hash, rol) VALUES
-  ('Admin', 'Repostería', 'admin@bakery.com', '$2a$10$rdkPt5JlBcBjCkeZhSlZqOjtq2B4eFFvMc2V0jEkUO1SkN47fQ7A2', 'admin')
+INSERT INTO usuarios (nombre, apellido, email, password_hash, direccion, rol) VALUES
+  ('Admin', 'Repostería', 'admin@bakery.com', '$2a$10$rdkPt5JlBcBjCkeZhSlZqOjtq2B4eFFvMc2V0jEkUO1SkN47fQ7A2', NULL, 'admin')
 ON CONFLICT DO NOTHING;
 
 -- Usuario estándar de prueba (password: Cliente123)
-INSERT INTO usuarios (nombre, apellido, email, password_hash, rol) VALUES
-  ('Cliente', 'Prueba', 'cliente@bakery.com', '$2a$10$lA0sMCMOPuy7Y1mXYaGy.O7ZOf6QZeBoVRmSxQSOLVmJzI.0wc4xG', 'cliente')
+INSERT INTO usuarios (nombre, apellido, email, password_hash, direccion, rol) VALUES
+  ('Cliente', 'Prueba', 'cliente@bakery.com', '$2a$10$lA0sMCMOPuy7Y1mXYaGy.O7ZOf6QZeBoVRmSxQSOLVmJzI.0wc4xG', 'Calle 5 # 38-25, Éxito San Fernando, Cali', 'cliente')
 ON CONFLICT DO NOTHING;
 
 SELECT 'Base de datos inicializada correctamente ✅' AS mensaje;

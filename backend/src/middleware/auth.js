@@ -16,7 +16,7 @@ const authMiddleware = async (req, res, next) => {
       return res.status(401).json({ error: 'Token inválido o expirado' });
     }
     const result = await pool.query(
-      'SELECT id, nombre, apellido, email, telefono, rol FROM usuarios WHERE id = $1 AND activo = true',
+      'SELECT id, nombre, apellido, email, telefono, direccion, rol FROM usuarios WHERE id = $1 AND activo = true',
       [decoded.id]
     );
     if (!result.rows[0]) return res.status(401).json({ error: 'Usuario no encontrado o inactivo' });
@@ -35,7 +35,7 @@ const optionalAuthMiddleware = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const result = await pool.query(
-      'SELECT id, nombre, apellido, email, telefono, rol FROM usuarios WHERE id = $1 AND activo = true',
+      'SELECT id, nombre, apellido, email, telefono, direccion, rol FROM usuarios WHERE id = $1 AND activo = true',
       [decoded.id]
     );
     if (result.rows[0]) req.user = result.rows[0];

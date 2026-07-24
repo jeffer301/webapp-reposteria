@@ -28,15 +28,25 @@
             </div>
             <div class="col-12">
               <label class="form-label">Tipo de entrega</label>
-              <select class="form-select" [(ngModel)]="form.tipo" (change)="toggleDireccion()">
+              <select class="form-select" [(ngModel)]="form.tipo" (change)="onTipoChange()">
                 <option value="recoger">🏪 Recoger en tienda</option>
                 <option value="domicilio">🚚 Entrega a domicilio</option>
               </select>
             </div>
-            <div class="col-12 d-none" id="direccionRow">
-              <label class="form-label">Dirección de entrega</label>
-              <textarea class="form-control" [(ngModel)]="form.direccion" rows="2" placeholder="Calle, número, colonia, ciudad..."></textarea>
-            </div>
+            @if (form.tipo === 'domicilio') {
+              <div class="col-12">
+                <label class="form-label">Dirección de entrega</label>
+                @if (hasSavedDireccion) {
+                  <select class="form-select mb-2" [(ngModel)]="direccionSelection" (change)="onDireccionChange()">
+                    <option value="saved">{{ savedDireccion }}</option>
+                    <option value="new">+ Agregar nueva dirección</option>
+                  </select>
+                }
+                <textarea class="form-control" [(ngModel)]="form.direccion" rows="2"
+                  [placeholder]="direccionSelection() === 'new' || !hasSavedDireccion ? 'Calle, número, colonia, ciudad...' : ''"
+                  [attr.readonly]="direccionSelection() === 'saved' && hasSavedDireccion ? '' : null"></textarea>
+              </div>
+            }
             <div class="col-12">
               <label class="form-label">{{ form.tipo === 'domicilio' ? 'Fecha y hora de entrega' : 'Fecha y hora de recogida' }}</label>
               <input class="form-control" [(ngModel)]="form.fecha" type="datetime-local" [min]="minFecha()" step="1800">
