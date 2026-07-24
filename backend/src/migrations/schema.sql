@@ -140,14 +140,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trigger_usuarios_updated ON usuarios;
 CREATE TRIGGER trigger_usuarios_updated
   BEFORE UPDATE ON usuarios
   FOR EACH ROW EXECUTE FUNCTION actualizar_timestamp();
 
+DROP TRIGGER IF EXISTS trigger_productos_updated ON productos;
 CREATE TRIGGER trigger_productos_updated
   BEFORE UPDATE ON productos
   FOR EACH ROW EXECUTE FUNCTION actualizar_timestamp();
 
+DROP TRIGGER IF EXISTS trigger_pedidos_updated ON pedidos;
 CREATE TRIGGER trigger_pedidos_updated
   BEFORE UPDATE ON pedidos
   FOR EACH ROW EXECUTE FUNCTION actualizar_timestamp();
