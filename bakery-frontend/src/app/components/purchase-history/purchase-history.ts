@@ -1,11 +1,13 @@
 import { Component, inject, output, signal, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api';
+import { TicketModal } from '../ticket-modal/ticket-modal';
 import { Order } from '../../models';
 
 @Component({
   selector: 'app-purchase-history',
   templateUrl: './purchase-history.html',
   styleUrl: './purchase-history.scss',
+  imports: [TicketModal],
 })
 export class PurchaseHistory implements OnInit {
   readonly close = output();
@@ -15,6 +17,7 @@ export class PurchaseHistory implements OnInit {
   loading = signal(true);
   error = signal('');
   expandedOrder = signal<string | null>(null);
+  viewOrder = signal<Order | null>(null);
 
   ngOnInit(): void {
     this.loadOrders();
@@ -35,6 +38,15 @@ export class PurchaseHistory implements OnInit {
 
   toggleExpand(id: string): void {
     this.expandedOrder.set(this.expandedOrder() === id ? null : id);
+  }
+
+  openTicket(order: Order, e: Event): void {
+    e.stopPropagation();
+    this.viewOrder.set(order);
+  }
+
+  closeTicket(): void {
+    this.viewOrder.set(null);
   }
 
   estadoLabel(estado: string): string {

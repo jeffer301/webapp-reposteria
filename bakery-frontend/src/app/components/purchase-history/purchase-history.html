@@ -76,6 +76,11 @@
                     <span class="detail-label">Total:</span>
                     <span class="order-total">{{ fmtCOP(order.total) }}</span>
                   </div>
+                  <div class="text-center mt-3">
+                    <button class="btn-ticket" (click)="openTicket(order, $event)">
+                      <i class="bi bi-receipt me-1" aria-hidden="true"></i>Ver Ticket
+                    </button>
+                  </div>
                 </div>
               }
             </div>
@@ -85,3 +90,7 @@
     </div>
   </div>
 </div>
+
+@if (viewOrder(); as ticketOrder) {
+  <app-ticket-modal [order]="ticketOrder" (close)="closeTicket()" />
+}
