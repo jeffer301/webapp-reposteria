@@ -11,7 +11,7 @@ const register = async (req, res) => {
     const hash = await bcrypt.hash(password, 10);
     const result = await pool.query(
       `INSERT INTO usuarios (nombre, apellido, email, password_hash, telefono)
-       VALUES ($1,$2,$3,$4,$5) RETURNING id, nombre, apellido, email, rol`,
+       VALUES ($1,$2,$3,$4,$5) RETURNING id, nombre, apellido, email, telefono, rol`,
       [nombre, apellido, email, hash, telefono]
     );
     const user = result.rows[0];
@@ -36,7 +36,7 @@ const login = async (req, res) => {
     const token = jwt.sign({ id: user.id, rol: user.rol }, process.env.JWT_SECRET, { expiresIn: '7d' });
     res.json({
       token,
-      user: { id: user.id, nombre: user.nombre, apellido: user.apellido, email: user.email, rol: user.rol }
+      user: { id: user.id, nombre: user.nombre, apellido: user.apellido, email: user.email, telefono: user.telefono, rol: user.rol }
     });
   } catch (err) {
     res.status(500).json({ error: 'Error al iniciar sesión' });

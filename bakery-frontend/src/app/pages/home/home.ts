@@ -12,6 +12,7 @@ import { CheckoutModal } from '../../components/checkout-modal/checkout-modal';
 import { TicketModal } from '../../components/ticket-modal/ticket-modal';
 import { Verifier } from '../../components/verifier/verifier';
 import { AuthModal } from '../../components/auth-modal/auth-modal';
+import { PurchaseHistory } from '../../components/purchase-history/purchase-history';
 import { FooterComponent } from '../../components/footer/footer';
 import { ToastComponent } from '../../components/toast/toast';
 
@@ -21,7 +22,7 @@ const STORAGE_KEY = 'bakery_last_order';
   selector: 'app-home',
   imports: [
     Navbar, Hero, ProductGrid, ProductDetail, CartSidebar,
-    CheckoutModal, TicketModal, Verifier, AuthModal,
+    CheckoutModal, TicketModal, Verifier, AuthModal, PurchaseHistory,
     FooterComponent, ToastComponent,
   ],
   templateUrl: './home.html',
@@ -33,6 +34,7 @@ export class HomeComponent implements OnInit {
   order: any = null;
   selectedProduct: Product | null = null;
   authOpen = false;
+  purchaseHistoryOpen = false;
   readonly toast = viewChild(ToastComponent);
   private productService = inject(ProductService);
   private api = inject(ApiService);
@@ -98,6 +100,14 @@ export class HomeComponent implements OnInit {
 
   closeAuth(): void {
     this.authOpen = false;
+  }
+
+  openPurchaseHistory(): void {
+    this.purchaseHistoryOpen = true;
+  }
+
+  closePurchaseHistory(): void {
+    this.purchaseHistoryOpen = false;
   }
 
   onDone(order: any): void {

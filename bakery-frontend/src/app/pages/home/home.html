@@ -1,4 +1,4 @@
-<app-navbar (toggleCart)="toggleCart()" (toggleAuth)="openAuth()" />
+<app-navbar (toggleCart)="toggleCart()" (toggleAuth)="openAuth()" (togglePurchaseHistory)="openPurchaseHistory()" />
 
 @if (savedOrderCode(); as code) {
   <div class="recovery-banner">
@@ -36,6 +36,10 @@
 
 @if (authOpen) {
   <app-auth-modal (close)="closeAuth()" />
+}
+
+@if (purchaseHistoryOpen) {
+  <app-purchase-history (close)="closePurchaseHistory()" />
 }
 
 <div id="verificar"><app-verifier /></div>

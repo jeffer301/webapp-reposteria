@@ -1,0 +1,87 @@
+<div class="modal-overlay" (click)="close.emit()"></div>
+<div class="modal-show modal-bakery" style="width:min(560px,96vw)">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title"><i class="bi bi-bag-check me-2" aria-hidden="true"></i>Mis Compras</h5>
+      <button type="button" class="btn-close btn-close-white" (click)="close.emit()"></button>
+    </div>
+    <div class="modal-body p-3">
+      @if (loading()) {
+        <div class="text-center py-4">
+          <span class="spinner-border spinner-border-sm me-1"></span>Cargando pedidos...
+        </div>
+      } @else if (error()) {
+        <div class="alert alert-danger py-2">{{ error() }}</div>
+      } @else if (orders().length === 0) {
+        <div class="text-center py-4" style="color:var(--muted)">
+          <i class="bi bi-bag-x" style="font-size:2rem;display:block;margin-bottom:.5rem"></i>
+          No tienes pedidos aún.
+        </div>
+      } @else {
+        <div class="order-list">
+          @for (order of orders(); track order.id) {
+            <div class="order-card">
+              <div class="order-header" (click)="toggleExpand(order.id)">
+                <div class="order-info">
+                  <span class="order-code">{{ order.codigo }}</span>
+                  <span class="order-date">{{ fecha(order.created_at) }}</span>
+                </div>
+                <div class="order-right">
+                  <span class="order-estado" [class]="estadoClass(order.estado)">{{ estadoLabel(order.estado) }}</span>
+                  <span class="order-total">{{ fmtCOP(order.total) }}</span>
+                  <i class="bi" [class.bi-chevron-down]="expandedOrder() !== order.id" [class.bi-chevron-up]="expandedOrder() === order.id"></i>
+                </div>
+              </div>
+              @if (expandedOrder() === order.id) {
+                <div class="order-details">
+                  <div class="detail-row">
+                    <span class="detail-label">Tipo de entrega:</span>
+                    <span>{{ order.tipo_entrega === 'domicilio' ? 'Domicilio' : 'Recoger en tienda' }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Método de pago:</span>
+                    <span>{{ order.metodo_pago }}</span>
+                  </div>
+                  @if (order.direccion_entrega) {
+                    <div class="detail-row">
+                      <span class="detail-label">Dirección:</span>
+                      <span>{{ order.direccion_entrega }}</span>
+                    </div>
+                  }
+                  @if (order.fecha_recogida) {
+                    <div class="detail-row">
+                      <span class="detail-label">Fecha de recogida:</span>
+                      <span>{{ fecha(order.fecha_recogida) }}</span>
+                    </div>
+                  }
+                  <hr class="my-2">
+                  <p class="items-title mb-1">Productos:</p>
+                  @for (item of order.items; track item.producto_id) {
+                    <div class="item-row">
+                      <span class="item-name">{{ item.nombre_producto }}</span>
+                      <span class="item-qty">x{{ item.cantidad }}</span>
+                      <span class="item-subtotal">{{ fmtCOP(item.subtotal) }}</span>
+                    </div>
+                  }
+                  <hr class="my-2">
+                  <div class="detail-row">
+                    <span class="detail-label">Subtotal:</span>
+                    <span>{{ fmtCOP(order.subtotal) }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Impuesto (16%):</span>
+                    <span>{{ fmtCOP(order.impuesto) }}</span>
+                  </div>
+                  <div class="detail-row total-row">
+                    <span class="detail-label">Total:</span>
+                    <span class="order-total">{{ fmtCOP(order.total) }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

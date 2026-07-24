@@ -4,7 +4,7 @@ const authCtrl = require('../controllers/authController');
 const prodCtrl = require('../controllers/productController');
 const orderCtrl = require('../controllers/orderController');
 const uploadCtrl = require('../controllers/uploadController');
-const { authMiddleware, adminMiddleware } = require('../middleware/auth');
+const { authMiddleware, optionalAuthMiddleware, adminMiddleware } = require('../middleware/auth');
 const {
   registerRules, loginRules,
   productRules, productUpdateRules,
@@ -32,7 +32,7 @@ router.put('/categorias/:id', authMiddleware, adminMiddleware, prodCtrl.updateCa
 router.delete('/categorias/:id', authMiddleware, adminMiddleware, prodCtrl.deleteCategoria);
 
 // ── PEDIDOS ───────────────────────────────────
-router.post('/pedidos', orderRules, orderCtrl.create);
+router.post('/pedidos', optionalAuthMiddleware, orderRules, orderCtrl.create);
 router.get('/pedidos/mis-pedidos', authMiddleware, orderCtrl.getMisPedidos);
 router.get('/pedidos/verificar/:codigo', verificarRules, orderCtrl.getByCode);
 router.get('/pedidos', authMiddleware, adminMiddleware, orderCtrl.getAll);

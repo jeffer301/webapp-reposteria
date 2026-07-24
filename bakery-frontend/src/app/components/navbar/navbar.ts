@@ -15,6 +15,7 @@ export class Navbar {
   private router = inject(Router);
   readonly toggleCart = output();
   readonly toggleAuth = output();
+  readonly togglePurchaseHistory = output();
 
   scrollTo(id: string) {
     const el = document.getElementById(id);

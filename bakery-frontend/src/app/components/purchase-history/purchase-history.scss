@@ -1,0 +1,82 @@
+@use '../../styles-vars' as *;
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: var(--z-modal-bg, 300); }
+.modal-show { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: var(--z-modal, 301); max-height: 90vh; overflow-y: auto; }
+.modal-bakery .modal-content { border-radius: 1.2rem; border: none; background: #fff; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+.modal-bakery .modal-header { background: $chocolate; color: #fff; border-radius: 1.2rem 1.2rem 0 0; }
+.modal-bakery .modal-title { font-family: 'Playfair Display', serif; color: $gold; }
+
+.order-list { display: flex; flex-direction: column; gap: .75rem; }
+
+.order-card {
+  border: 1px solid #e8ddd0;
+  border-radius: .75rem;
+  overflow: hidden;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .75rem 1rem;
+  cursor: pointer;
+  background: $cream;
+  transition: background .2s;
+  &:hover { background: $gold-light; }
+}
+
+.order-info { display: flex; flex-direction: column; gap: .15rem; }
+.order-code { font-weight: 700; color: $chocolate; font-size: .9rem; }
+.order-date { font-size: .78rem; color: $muted; }
+
+.order-right { display: flex; align-items: center; gap: .6rem; }
+
+.order-estado {
+  font-size: .72rem;
+  font-weight: 600;
+  padding: .2rem .5rem;
+  border-radius: 50px;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+.estado-pendiente { background: #fff3cd; color: #856404; }
+.estado-confirmado { background: #d1ecf1; color: #0c5460; }
+.estado-preparando { background: #cce5ff; color: #004085; }
+.estado-listo { background: #d4edda; color: #155724; }
+.estado-entregado { background: $gold-light; color: $chocolate; }
+.estado-cancelado { background: #f8d7da; color: #721c24; }
+
+.order-total { font-weight: 700; color: $chocolate; font-size: .9rem; white-space: nowrap; }
+
+.order-details {
+  padding: .75rem 1rem;
+  border-top: 1px solid #e8ddd0;
+  background: #fff;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: .82rem;
+  padding: .2rem 0;
+}
+
+.detail-label { color: $muted; font-weight: 500; }
+
+.total-row {
+  font-weight: 700;
+  font-size: .9rem;
+}
+
+.items-title { font-weight: 600; font-size: .85rem; color: $chocolate; }
+
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .82rem;
+  padding: .25rem 0;
+}
+.item-name { flex: 1; color: $text; }
+.item-qty { color: $muted; font-weight: 500; }
+.item-subtotal { font-weight: 600; color: $chocolate; white-space: nowrap; }

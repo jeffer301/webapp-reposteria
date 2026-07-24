@@ -1,5 +1,6 @@
 import { Component, inject, output, signal } from '@angular/core';
 import { CartService } from '../../services/cart';
+import { AuthService } from '../../services/auth';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -10,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class CheckoutModal {
   cart = inject(CartService);
+  private auth = inject(AuthService);
   readonly close = output();
   readonly done = output<any>();
 
@@ -35,6 +37,13 @@ export class CheckoutModal {
 
   constructor() {
     this.form.fecha = this.mananaApertura();
+    const user = this.auth.user();
+    if (user) {
+      this.form.nombre = user.nombre;
+      this.form.apellido = user.apellido;
+      this.form.email = user.email;
+      if (user.telefono) this.form.telefono = user.telefono;
+    }
   }
 
   private mananaApertura(): string {

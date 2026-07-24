@@ -29,3 +29,7 @@ bakery_key.txt
 # CodeCanyon release artifacts
 *.zip
 _release/
+
+# Demo evaluation script (local only)
+DEMO*.md
+TRELLO*.md

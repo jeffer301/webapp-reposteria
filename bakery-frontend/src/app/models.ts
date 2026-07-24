@@ -17,6 +17,7 @@ export interface CartItem {
 }
 
 export interface OrderItem {
+  producto_id: number;
   nombre_producto: string;
   cantidad: number;
   precio_unitario: number;
@@ -35,6 +36,8 @@ export interface Order {
   tipo_entrega: string;
   metodo_pago: string;
   estado: string;
+  estado_pago?: string;
+  referencia_pago?: string;
   notas: string;
   direccion_entrega: string;
   fecha_recogida: string;
@@ -48,5 +51,6 @@ export interface User {
   nombre: string;
   apellido: string;
   email: string;
+  telefono?: string;
   rol: string;
 }
