@@ -42,9 +42,10 @@
                     <option value="new">+ Agregar nueva dirección</option>
                   </select>
                 }
-                <textarea class="form-control" [(ngModel)]="form.direccion" rows="2"
-                  [placeholder]="direccionSelection() === 'new' || !hasSavedDireccion ? 'Calle, número, colonia, ciudad...' : ''"
-                  [attr.readonly]="direccionSelection() === 'saved' && hasSavedDireccion ? '' : null"></textarea>
+                @if (direccionSelection() === 'new' || !hasSavedDireccion) {
+                  <textarea class="form-control" [(ngModel)]="form.direccion" rows="2"
+                    placeholder="Calle, número, colonia, ciudad..."></textarea>
+                }
               </div>
             }
             <div class="col-12">
