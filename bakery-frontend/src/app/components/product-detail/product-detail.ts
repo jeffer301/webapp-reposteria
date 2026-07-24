@@ -1,4 +1,4 @@
-import { Component, input, output, inject } from '@angular/core';
+import { Component, input, output, inject, signal } from '@angular/core';
 import { Product } from '../../models';
 import { CartService } from '../../services/cart';
 
@@ -12,10 +12,22 @@ export class ProductDetail {
   readonly close = output();
   private cart = inject(CartService);
 
+  readonly cantidad = signal(1);
+
+  increment(): void {
+    const p = this.product();
+    if (p && this.cantidad() < p.stock) this.cantidad.update(v => v + 1);
+  }
+
+  decrement(): void {
+    if (this.cantidad() > 1) this.cantidad.update(v => v - 1);
+  }
+
   addToCart(): void {
     const p = this.product();
     if (!p) return;
-    this.cart.addToCart(p);
+    this.cart.addToCart(p, this.cantidad());
+    this.cantidad.set(1);
     this.close.emit();
   }
 

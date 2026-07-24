@@ -33,11 +33,19 @@
             }
           </div>
 
+          @if (p.stock > 0) {
+            <div class="qty-control-detail">
+              <button class="qty-btn-detail" (click)="decrement()" [disabled]="cantidad() <= 1" aria-label="Reducir cantidad">−</button>
+              <span class="qty-num-detail" aria-live="polite">{{ cantidad() }}</span>
+              <button class="qty-btn-detail" (click)="increment()" [disabled]="cantidad() >= p.stock" aria-label="Aumentar cantidad">+</button>
+            </div>
+          }
+
           <button class="btn-add-detail" (click)="addToCart()" [disabled]="p.stock <= 0">
             @if (p.stock <= 0) {
               <i class="bi bi-slash-circle me-2" aria-hidden="true"></i>Agotado
             } @else {
-              <i class="bi bi-cart-plus me-2" aria-hidden="true"></i>Agregar al carrito — {{ fmtCOP(p.precio) }}
+              <i class="bi bi-cart-plus me-2" aria-hidden="true"></i>Agregar al carrito — {{ fmtCOP(p.precio * cantidad()) }}
             }
           </button>
         </div>

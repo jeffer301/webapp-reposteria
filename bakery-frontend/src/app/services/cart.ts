@@ -26,13 +26,13 @@ export class CartService {
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.items()));
   }
 
-  addToCart(product: Product): void {
+  addToCart(product: Product, quantity = 1): void {
     this.items.update(items => {
       const idx = items.findIndex(i => i.product.id === product.id);
       if (idx >= 0) {
-        items[idx] = { ...items[idx], cantidad: items[idx].cantidad + 1 };
+        items[idx] = { ...items[idx], cantidad: items[idx].cantidad + quantity };
       } else {
-        items = [...items, { product, cantidad: 1 }];
+        items = [...items, { product, cantidad: quantity }];
       }
       return items;
     });
